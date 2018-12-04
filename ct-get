@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# Check if the script is running with root privileges
+if [ "$EUID" -ne 0 ]; then
+    echo "Error: Permission denied"
+    exit
+fi
+
+echo "Installing scripts"
+
+# Download the repository from GitHub
+wget -qP /tmp https://github.com/hoernsten/lxd/archive/master.tar.gz
+
+# Extract the archive to /tmp and modify script permissions
+tar xzf /tmp/master.tar.gz -C /tmp
+rm /tmp/lxd-master/README.md
+chown root:lxd /tmp/lxd-master/*
+chmod u=rwx,g=xr,o=r /tmp/lxd-master/*
+
+# Transfer the scripts to /usr/local/bin and delete the temp data
+mv /tmp/lxd-master/* /usr/local/bin/
+rm -rf /tmp/{master.tar.gz,lxd-master}

@@ -1,0 +1,27 @@
+#!/bin/bash
+
+list=( "$@" )
+
+# Update all running containers if none is specified
+if [ -z $list ]; then
+    list=( $(lxc list -c ns | awk '!/NAME/{ if ( $4 == "RUNNING" ) print $2}') )
+fi
+
+# Create snapshots and update all running containers in the list
+for i in "${list[@]}"; do
+    if lxc list $i | grep -oq 'RUNNING'; then
+        snap=update_$(date '+%Y-%m-%d')
+        echo "Creating snapshot $i/$snap"
+        lxc snapshot $i $snap
+        if lxc exec $i -- grep -oq 'Ubuntu' /etc/os-release; then
+            echo "Updating $i"
+            lxc exec $i -- apt-get update 1>/dev/null
+            lxc exec $i -- apt-get upgrade -y 1>/dev/null
+            lxc exec $i -- apt-get dist-upgrade -y 1>/dev/null
+            lxc exec $i -- apt-get autoremove -y 1>/dev/null
+            echo "Finished updating $i"
+        fi
+    else
+        echo "Error: Target $i is not running or does not exist"
+    fi
+done

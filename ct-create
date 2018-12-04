@@ -1,0 +1,96 @@
+#!/bin/bash
+
+# Check if the user is a member of the lxd group
+if ! groups $(whoami) | grep -oq lxd; then
+    echo "Error: User is not a member of the lxd group"
+    exit
+fi
+
+# Check if a container name was provided and prompt for one if not
+if [ ! -z $1 ]; then
+    container=$1
+    else
+        read -p "Enter container name: " container
+fi
+
+# Prompt for container configuration details
+read -p "Select image (bionic/xenial/centos) [default=bionic]: " image
+read -p "Enter container profile [default=default]: " profile
+read -p "Set container disk quota (e.g. 500MB or 10GB) [default=5GB]: " quota
+read -p "Set container memory limit (e.g. 512MB or 4096MB) [default=512MB]: " memory
+read -p "Set container CPU core count limit (1-$(nproc)) [default=1]: " cpu
+read -p "Set container CPU priority (1-10) [default=5]: " priority
+read -p "Run config script on the container (yes/no) [default=yes]: " config
+read -p "Enter storage pool [default=default]: " pool
+
+# Revert to default values if no input is provided
+if [ -z $profile ]; then
+    profile=default
+fi
+
+if [ -z $quota ]; then
+    quota=5GB
+fi
+
+if [ -z $memory ]; then
+    memory=512MB
+fi
+
+if [ -z $cpu ]; then
+    cpu=1
+fi
+
+if [ -z $priority ]; then
+    priority=5
+fi
+
+if [ -z $pool ]; then
+    pool=default
+fi
+
+# Check if the storage pool exists
+if lxc storage show $pool 2>&1 | grep -oq 'Error: not found'; then
+    echo "Error: Storage pool does not exist"
+    exit
+fi
+
+# Check if the container profile exists
+if lxc profile show $profile 2>&1 | grep -oq 'Error: not found'; then
+    echo "Error: Container profile does not exist"
+    exit
+fi
+
+# Generate a randomized container name if no input is provided
+if [ -z $container ]; then
+    container=$(cat /dev/urandom | tr -dc 'a-z' | fold -w 12 | head -n 1)
+fi
+
+echo "Updating image"
+
+# Update the image based on the OS selection
+if [[ $image == "xenial" ]]; then
+    lxc image copy ubuntu:16.04 local: --alias xenial --auto-update
+    elif [[ $image == "centos" ]]; then
+        lxc image copy images:centos/7 local: --alias centos --auto-update
+    else
+        image=bionic
+        lxc image copy ubuntu:18.04 local: --alias bionic --auto-update
+fi
+
+# Create the container and apply resource limitations
+lxc init -p $profile $image $container
+lxc config set $container limits.memory $memory
+lxc config set $container limits.memory.enforce soft
+lxc config set $container limits.cpu $cpu
+lxc config set $container limits.cpu.priority $priority
+lxc config device add $container root disk path=/ pool=$pool size=$quota 1>/dev/null
+
+# Transfer the ct-config script to the guest container and run it
+if [[ $config != "no" ]]; then
+    echo "Running config script"
+    lxc start $container
+    lxc file push /usr/local/bin/ct-config $container/root/ct-config 1>/dev/null
+    lxc exec $container -- ./ct-config
+    lxc exec $container -- rm ct-config
+    lxc stop $container
+fi
