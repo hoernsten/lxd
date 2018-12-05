@@ -116,16 +116,55 @@ create () {
 
 # Update containers
 update () {
-  # ct update ct1 ct2 ...
+  # Update all running containers if none is specified
+  if [ -z $list ]; then
+    echo "Error: No containers were selected for update"
+    exit
+  elif [[ $2 == "all" ]]; then
+    list=( $(lxc list -c ns | awk '!/NAME/{ if ( $4 == "RUNNING" ) print $2}') )
+  fi
+
+  # Create snapshots and update all running containers in the list
   for i in "${list[@]}"; do
-    echo "Updating $i"
+    if lxc list $i | grep -oq 'RUNNING'; then
+      snap=update_$(date '+%Y-%m-%d')
+      echo "Creating snapshot $i/$snap"
+      lxc snapshot $i $snap
+      if lxc exec $i -- grep -oq 'Ubuntu' /etc/os-release; then
+        echo "Updating $i"
+        lxc exec $i -- apt-get update 1>/dev/null
+        lxc exec $i -- apt-get upgrade -y 1>/dev/null
+        lxc exec $i -- apt-get dist-upgrade -y 1>/dev/null
+        lxc exec $i -- apt-get autoremove -y 1>/dev/null
+      fi
+    else
+      echo "Error: Target $i is not running or does not exist"
+    fi
   done
 }
 
 # Download the latest script version
 get () {
-  # ct get
+  # Check if the script is running with root privileges
+  if [ "$EUID" -ne 0 ]; then
+      echo "Error: Permission denied"
+      exit
+  fi
+
   echo "Installing scripts"
+
+  # Download the repository from GitHub
+  wget -qP /tmp https://github.com/hoernsten/lxd/archive/master.tar.gz
+
+  # Extract the archive to /tmp and modify script permissions
+  tar xzf /tmp/master.tar.gz -C /tmp
+  rm /tmp/lxd-master/README.md
+  chown root:lxd /tmp/lxd-master/*
+  chmod u=rwx,g=xr,o=r /tmp/lxd-master/*
+
+  # Transfer the scripts to /usr/local/bin and delete the temp data
+  mv /tmp/lxd-master/* /usr/local/bin/
+  rm -rf /tmp/{master.tar.gz,lxd-master}
 }
 
 # Run the appropriate function based on the first argument
@@ -133,7 +172,7 @@ if [[ $1 = "create" ]]; then
   container=$2
   create $container
 elif [[ $1 = "update" ]]; then
-  update $list
+  update $list $2
 elif [[ $1 = "get" ]]; then
   get
 else
