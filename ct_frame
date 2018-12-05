@@ -6,17 +6,22 @@ list=("${args[@]:1}")
 
 # Create a new container
 create () {
-  # ...
+  # ct create ct1
+  echo "Creating container $container"
 }
 
 # Update containers
 update () {
-  # ...
+  # ct update ct1 ct2 ...
+  for i in "${list[@]}"; do
+    echo "Updating $i"
+  done
 }
 
 # Download the latest script version
 get () {
-  # ...
+  # ct get
+  echo "Installing scripts"
 }
 
 # Run the appropriate function based on the first argument
@@ -31,4 +36,3 @@ else
   echo "Error: Invalid argument(s)"
   exit
 fi
-
