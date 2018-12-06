@@ -132,10 +132,10 @@ update () {
       lxc snapshot $i $snap
       if lxc exec $i -- grep -oq 'Ubuntu' /etc/os-release; then
         echo "Updating $i"
-        lxc exec $i -- apt-get update 1>/dev/null
-        lxc exec $i -- apt-get upgrade -y 1>/dev/null
-        lxc exec $i -- apt-get dist-upgrade -y 1>/dev/null
-        lxc exec $i -- apt-get autoremove -y 1>/dev/null
+        lxc exec $i -- apt-get -y update
+        lxc exec $i -- apt-get -y upgrade
+        lxc exec $i -- apt-get -y dist-upgrade
+        lxc exec $i -- apt-get -y autoremove
       fi
     else
       echo "Error: Target $i is not running or does not exist"
