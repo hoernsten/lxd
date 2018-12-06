@@ -6,10 +6,12 @@ if [ "$EUID" -ne 0 ]; then
     exit
 fi
 
-echo "Installing scripts"
+echo "Downloading remote repository"
 
-# Download the repository from GitHub
+# Download the repository
 wget -qP /tmp https://github.com/hoernsten/lxd/archive/master.tar.gz
+
+echo "Installing script files"
 
 # Extract the archive to /tmp and modify script permissions
 tar xzf /tmp/master.tar.gz -C /tmp
