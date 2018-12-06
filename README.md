@@ -32,7 +32,7 @@ groups $USER | grep -o lxd
 
 ### Usage
 
-To create a new container, use *ct create <container name>*. You’ll be asked whether you want to run the configuration script during the creation process, which is something you’ll probably want to do, but this is not required to create the container.
+To create a new container, use *ct create*. You’ll be asked whether you want to run the configuration script during the creation process, which is something you’ll probably want to do, but this is not required.
 
 ```
 ct create ct1
