@@ -30,10 +30,10 @@ From then on you’ll be able to run all scripts simply by invoking them. Just r
 groups $USER | grep -o lxd
 ```
 
-To create a new container, run ct-create. You’ll be asked whether you want to run the configuration script during the creation process, which is something you’ll probably want to do, but this is not required to create the container.
+To create a new container, run *ct create <container name>*. You’ll be asked whether you want to run the configuration script during the creation process, which is something you’ll probably want to do, but this is not required to create the container.
 
 ```
-ct-create ct1
+ct create ct1
 ```
 
 I recommend finishing the container creation process by creating a snapshot immediately after.
@@ -42,10 +42,11 @@ I recommend finishing the container creation process by creating a snapshot imme
 lxc snapshot ct1 snap_$(date '+%Y-%m-%d')
 ```
 
-To update one or more containers, run ct-update. If you want to update all containers, run ct-update without any arguments.
+To update the containers, run *ct update* and specify the container names. If you want to update all contain
 
 ```
-ct-update ct1 ct2 ...
+ct update all
+ct update ct1 ct2 ct3 ...
 ```
 
 Again, use ct-get to keep the scripts up-to-date.
