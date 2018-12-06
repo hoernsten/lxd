@@ -143,11 +143,6 @@ update () {
   done
 }
 
-# Download the latest script version
-get () {
-  /usr/local/bin/ct-get
-}
-
 # Run the appropriate function based on the first argument
 if [[ $1 = "create" ]]; then
   container=$2
@@ -155,7 +150,8 @@ if [[ $1 = "create" ]]; then
 elif [[ $1 = "update" ]]; then
   update $list $2
 elif [[ $1 = "get" ]]; then
-  get
+  # Download the latest script version
+  ct-get
 else
   echo "Error: Invalid argument(s)"
   exit
