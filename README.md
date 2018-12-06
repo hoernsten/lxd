@@ -44,15 +44,15 @@ I recommend finishing the container creation process by creating a snapshot imme
 lxc snapshot ct1 snap_$(date '+%Y-%m-%d')
 ```
 
-To update the running containers, use *ct update* and either specify the container names or update all of them sequentially.
+To update the running containers, use *ct update* and either specify the container names or update all of them in a single go.
 
 ```
 ct update all
-ct update ct1 ct2 ct3 ...
+ct update ct1 ct2 ...
 ```
 
-Use ct get to keep the scripts up-to-date.
+Use *ct get* to keep the scripts up-to-date.
 
 ```
-sudo ct-get
+sudo ct get
 ```
