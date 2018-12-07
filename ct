@@ -116,11 +116,11 @@ create () {
 
 # Update containers
 update () {
-  # Update all running containers if none is specified
   if [ -z $list ]; then
     echo "Error: No containers were selected for update"
     exit
   elif [[ $2 == "all" ]]; then
+    # Update all running containers
     list=( $(lxc list -c ns | awk '!/NAME/{ if ( $4 == "RUNNING" ) print $2}') )
   fi
 
@@ -143,16 +143,40 @@ update () {
   done
 }
 
+# Run a custom script
+run () {
+  read -p "Select script: " script
+  read -p "Select container: " container
+  if [ ! -f $script ]; then
+      echo "Error: Could not find script"
+      exit
+    elif [[ ! -x $script  ]]; then
+      echo "Error: Selected file is not executable"
+      exit
+    elif ! lxc list $container | grep -oq 'RUNNING'; then
+      echo "Error: Container is not running or does not exist"
+      exit
+    else
+      # Push the script to the container and run it
+      file=$(cat /dev/urandom | tr -dc 'a-z' | fold -w 8 | head -n 1).tmp
+      lxc file push $script $container/tmp/$file 1>/dev/null
+      lxc exec $container -- /tmp/$file
+      lxc exec $container -- rm /tmp/$file
+  fi
+}
+
 # Run the appropriate function based on the first argument
 if [[ $1 = "create" ]]; then
-  container=$2
-  create $container
-elif [[ $1 = "update" ]]; then
-  update $list $2
-elif [[ $1 = "get" ]]; then
-  # Download the latest script version
-  ct-get
-else
-  echo "Error: Invalid argument(s)"
-  exit
+    container=$2
+    create $container
+  elif [[ $1 = "update" ]]; then
+    update $list $2
+  elif [[ $1 = "get" ]]; then
+    # Download the latest script version
+    ct-get
+  elif [[ $1 = "run" ]]; then
+    run
+  else
+    echo "Error: Invalid argument(s)"
+    exit
 fi

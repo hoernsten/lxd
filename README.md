@@ -51,6 +51,12 @@ ct update all
 ct update ct1 ct2 ...
 ```
 
+To run a custom script of your choosing on a container, use *ct run* and select script and container when prompted.
+
+```
+ct run
+```
+
 Use *ct get* to keep the scripts up-to-date.
 
 ```
