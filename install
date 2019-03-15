@@ -9,9 +9,6 @@ fi
 # Define target directory
 dst=/opt/lxd
 
-# Get the current directory
-dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-
 # Modify permissions
 chgrp -R lxd ./*
 chmod u=rwx,g=rwx,o=r ./*
@@ -21,8 +18,8 @@ if [[ ! -d $dst ]]; then
     mkdir -p $dst
 fi
 
-# Transfer the program to the target directory
-mv $dir/* $dst
+# Transfer the program files to the target directory
+mv !(install|README.md) $dst
 
 # Install the program by creating a symbolic link
 ln -s $dst/ct /usr/local/bin/
