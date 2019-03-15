@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# Prompt for the containers
+read -p "Enter container(s) to be updated: " containers
+
+# Check if no containers were entered
+if [ -z $containers ]; then
+    echo "Error: No containers were selected"
+    exit
+# Select all running containers to be updated
+elif [ $containers == "all" ]; then
+    containers=( $(lxc list -c ns | awk '!/NAME/{ if ( $4 == "RUNNING" ) print $2}') )
+fi
+
+# Update containers 
+for i in $containers; do
+    # Check if the container is running
+    if lxc list $i | grep -oq 'RUNNING'; then
+        # Create a snapshot of the container
+        echo "Creating snapshot of $i"
+        lxc snapshot $i update_$(date '+%Y-%m-%d')
+        # Update Ubuntu containers
+        if lxc exec $i -- grep -oq 'Ubuntu' /etc/os-release; then
+            echo "Updating $i"
+            lxc exec $i -- apt -y update
+            lxc exec $i -- apt -y upgrade
+            lxc exec $i -- apt -y autoremove
+        fi
+    else
+      echo "Error: Container $i is not running or does not exist"
+    fi
+done
