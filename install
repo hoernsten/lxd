@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Check if the script is running with root privileges
+if [ "$EUID" -ne 0 ]; then
+    echo "Error: Permission denied"
+    exit
+fi
+
+# Define target directory
+dst=/opt/lxd
+
+# Get the current directory
+dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+
+# Modify permissions
+chgrp -R lxd ./*
+chmod u=rwx,g=rwx,o=r ./*
+
+# Create the target directory if it does not exist
+if [[ ! -d $dst ]]; then
+    mkdir -p $dst
+fi
+
+# Transfer the program to the target directory
+mv $dir/* $dst
+
+# Install the program by creating a symbolic link
+ln -s $dst/ct /usr/local/bin/
