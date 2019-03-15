@@ -1,33 +1,27 @@
 #!/bin/bash
 
+### Download and install the latest modules ###
+
 # Check if the script is running with root privileges
 if [ "$EUID" -ne 0 ]; then
     echo "Error: Permission denied"
     exit
 fi
 
-# Define download URL and target directory
+# Define download URL
 url=https://github.com/hoernsten/lxd/archive/master.tar.gz
-dst=/opt/lxd
 
 # Download the repository
 wget -qP /tmp $url
 
-# Extract the archive
-tar xzf /tmp/master.tar.gz -C /tmp --exclude='.*' --exclude='README.md'
+# Extract the modules directory
+tar xzf /tmp/master.tar.gz -C /tmp lxd-master/modules
 
-# Modify permissions
-chgrp -R lxd /tmp/lxd-master/
-chmod u=rwx,g=rwx,o=r /tmp/lxd-master/*
+# Modify group ownership
+chgrp -R lxd /tmp/lxd-master/modules/
 
-# Create the target directory if it does not exist
-if [[ ! -d $dst ]]; then
-    mkdir -p $dst
-fi
+# Transfer the modules
+mv /tmp/lxd-master/modules/* ./modules
 
-# Transfer the program to the target directory and remove the temporary files
-mv /tmp/lxd-master/* $dst
+# Delete the temporary files
 rm -rf /tmp/{master.tar.gz,lxd-master}
-
-# Install the program by creating a symbolic link
-ln -s $dst/ct /usr/local/bin/
