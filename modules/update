@@ -20,11 +20,14 @@ for i in $containers; do
         echo "Creating snapshot of $i"
         lxc snapshot $i update_$(date '+%Y-%m-%d')
         # Update Ubuntu containers
+        echo "Updating $i"
         if lxc exec $i -- grep -oq 'Ubuntu' /etc/os-release; then
-            echo "Updating $i"
             lxc exec $i -- apt -y update
             lxc exec $i -- apt -y upgrade
             lxc exec $i -- apt -y autoremove
+        # Update CentOS containers
+        elif lxc exec $i -- grep -oq 'CentOS' /etc/os-release; then
+            lxc exec $i -- yum -y update
         fi
     else
       echo "Error: Container $i is not running or does not exist"
