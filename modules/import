@@ -6,16 +6,28 @@ if [ "$EUID" -ne 0 ]; then
     exit
 fi
 
-echo "Downloading remote repository"
+# Define download URL and target directory
+url=https://github.com/hoernsten/lxd/archive/master.tar.gz
+dst=/opt/lxd
 
 # Download the repository
-wget -qP /tmp https://github.com/hoernsten/lxd/archive/master.tar.gz
+wget -qP /tmp $url
 
-echo "Installing script files"
-
-# Extract the archive, modify permissions and install
+# Extract the archive
 tar xzf /tmp/master.tar.gz -C /tmp --exclude='.*' --exclude='README.md'
-chown root:lxd /tmp/lxd-master/*
-chmod u=rwx,g=xr,o=r /tmp/lxd-master/*
-mv /tmp/lxd-master/* /usr/local/bin/
+
+# Modify permissions
+chgrp -R lxd /tmp/lxd-master/
+chmod u=rwx,g=rwx,o=r /tmp/lxd-master/*
+
+# Create the target directory if it does not exist
+if [[ ! -d $dst ]]; then
+    mkdir -p $dst
+fi
+
+# Transfer the program to the target directory and remove the temporary files
+mv /tmp/lxd-master/* $dst
 rm -rf /tmp/{master.tar.gz,lxd-master}
+
+# Install the program by creating a symbolic link
+ln -s $dst/ct /usr/local/bin/
