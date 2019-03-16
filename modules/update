@@ -23,8 +23,8 @@ for i in $containers; do
     # Check if the container is running
     if lxc list $i | grep -oq 'RUNNING'; then
         # Create a snapshot of the container
-        echo "Creating snapshot of $i"
-        lxc snapshot $i update_$(date '+%Y-%m-%d')
+        echo "Creating a snapshot of $i"
+        lxc snapshot $i update_$(date '+%Y-%m-%d:%T')
         # Update Ubuntu containers
         echo "Updating $i"
         if lxc exec $i -- grep -oq 'Ubuntu' /etc/os-release; then
@@ -34,8 +34,10 @@ for i in $containers; do
         # Update CentOS containers
         elif lxc exec $i -- grep -oq 'CentOS' /etc/os-release; then
             lxc exec $i -- yum -y update
+        else
+            echo "Error: Unable to identify operating system"
         fi
     else
-      echo "Error: Container $i does not exist"
+        echo "Error: Container $i does not exist"
     fi
 done
