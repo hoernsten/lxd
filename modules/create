@@ -1,1 +1,87 @@
+#!/bin/bash
 
+# Prompt for container configuration details
+read -p "Enter container name: " container
+read -p "Select operating system (bionic/xenial/centos) [default=bionic]: " alias
+read -p "Set container disk quota (e.g. 500MB or 10GB) [default=5GB]: " quota
+read -p "Set container memory limit (e.g. 512MB or 4096MB) [default=512MB]: " memory
+read -p "Set container CPU core count limit (1-$(nproc)) [default=1]: " cpu
+read -p "Set container CPU priority (1-10) [default=5]: " priority
+read -p "Enter container profile [default=default]: " profile
+read -p "Enter storage pool [default=default]: " pool
+
+# Generate a randomized container name if none was provided
+if [ -z $container ]; then
+    container=$(cat /dev/urandom | tr -dc 'a-z' | fold -w 12 | head -n 1)
+fi
+
+# Revert to default values if no input is provided
+    if [ -z $alias ]; then
+    alias=bionic
+fi
+
+if [ -z $quota ]; then
+    quota=5GB
+fi
+
+if [ -z $memory ]; then
+    memory=512MB
+fi
+
+if [ -z $cpu ]; then
+    cpu=1
+fi
+
+if [ -z $priority ]; then
+    priority=5
+fi
+
+if [ -z $profile ]; then
+    profile=default
+fi
+
+if [ -z $pool ]; then
+    pool=default
+fi
+
+# Check if the container already exists
+if lxc list --columns="n" | grep -oq $container; then
+    echo "Error: Container $container already exists"
+    exit
+fi
+
+# Check if the storage pool exists
+if lxc storage show $pool 2>&1 | grep -oq 'Error: not found'; then
+    echo "Error: Storage pool does not exist"
+    exit
+fi
+
+# Check if the container profile exists
+if lxc profile show $profile 2>&1 | grep -oq 'Error: not found'; then
+    echo "Error: Container profile does not exist"
+    exit
+fi
+
+# Download the image if it does not exist
+if ! lxc image list | grep -oq $alias; then
+    if [[ $alias == "bionic" ]]; then
+        image="ubuntu:18.04"
+    elif [[ $alias == "xenial" ]]; then
+        image="ubuntu:16.04"
+    elif [[ $alias == "centos" ]]; then
+        image="images:centos/7"
+    else
+        echo "Error: Invalid image selection"
+        exit
+    fi
+    echo "Downloading image"
+    lxc image copy $image local: --alias $alias --auto-update
+fi
+
+# Create the container and apply resource limits
+lxc init -p $profile $alias $container
+lxc config set $container limits.memory $memory
+lxc config set $container limits.memory.enforce soft
+lxc config set $container limits.cpu $cpu
+lxc config set $container limits.cpu.priority $priority
+lxc config device add $container root disk path=/ pool=$pool size=$quota 1>/dev/null
