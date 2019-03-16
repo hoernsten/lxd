@@ -20,7 +20,7 @@ if [ -z $container ]; then
 fi
 
 # Revert to default values if no input is provided
-    if [ -z $alias ]; then
+if [ -z $alias ]; then
     alias=bionic
 fi
 
