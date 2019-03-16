@@ -15,10 +15,10 @@ fi
 # Update containers 
 for i in $containers; do
     # Start the container if it is not running
-	if lxc list $i | grep -oq 'STOPPED'; then
-	    lxc start $i
+    if lxc list $i | grep -oq 'STOPPED'; then
+        lxc start $i
         sleep 3
-	fi
+    fi
 	# Check if the container is running
     if lxc list $i | grep -oq 'RUNNING'; then
         # Create a snapshot of the container
