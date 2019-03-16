@@ -21,7 +21,7 @@ fi
 cp -r $dir/* $dst
 
 # Modify permissions and group ownership
-chgrp lxd $dst/*
+chgrp lxd $dst/ct
 chmod u=rwx,g=rx,o=r $dst/ct
 
 # Install the program by creating a symbolic link
