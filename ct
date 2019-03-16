@@ -1,182 +1,25 @@
 #!/bin/bash
 
-# Remove the first argument from the array
-args=( "$@" )
-list=("${args[@]:1}")
+# Define the path to the modules directory
+modules=$(dirname $(readlink -f $0))/modules
 
-# Create a new container
-create () {
-  # Check if the user is a member of the lxd group
-  if ! groups $(whoami) | grep -oq lxd; then
-    echo "Error: User is not a member of the lxd group"
-    exit
-  fi
-
-  # Prompt for a container name if none was provided
-  if [ -z $container ]; then
-    read -p "Enter container name: " container
-    # Generate a randomized container name if no input is provided
-    if [ -z $container ]; then
-      container=$(cat /dev/urandom | tr -dc 'a-z' | fold -w 12 | head -n 1)
-    fi
-  fi
-
-  # Prompt for container configuration details
-  read -p "Select operating system (bionic/xenial/centos) [default=bionic]: " alias
-  read -p "Set container disk quota (e.g. 500MB or 10GB) [default=5GB]: " quota
-  read -p "Set container memory limit (e.g. 512MB or 4096MB) [default=512MB]: " memory
-  read -p "Set container CPU core count limit (1-$(nproc)) [default=1]: " cpu
-  read -p "Set container CPU priority (1-10) [default=5]: " priority
-  read -p "Enter container profile [default=default]: " profile
-  read -p "Enter storage pool [default=default]: " pool
-  read -p "Run config script on the container (yes/no) [default=yes]: " config
-
-  # Revert to default values if no input is provided
-  if [ -z $alias ]; then
-    alias=bionic
-  fi
-
-  if [ -z $quota ]; then
-    quota=5GB
-  fi
-
-  if [ -z $memory ]; then
-    memory=512MB
-  fi
-
-  if [ -z $cpu ]; then
-    cpu=1
-  fi
-
-  if [ -z $priority ]; then
-    priority=5
-  fi
-
-  if [ -z $profile ]; then
-    profile=default
-  fi
-
-  if [ -z $pool ]; then
-    pool=default
-  fi
-
-  # Check if the container already exists
-  if lxc list --columns="n" | grep -oq $container; then
-    echo "Error: Container $container already exists"
-    exit
-  fi
-
-  # Check if the storage pool exists
-  if lxc storage show $pool 2>&1 | grep -oq 'Error: not found'; then
-    echo "Error: Storage pool does not exist"
-    exit
-  fi
-
-  # Check if the container profile exists
-  if lxc profile show $profile 2>&1 | grep -oq 'Error: not found'; then
-    echo "Error: Container profile does not exist"
-    exit
-  fi
-
-  # Download the image if it does not exist
-  if ! lxc image list | grep -oq $alias; then
-    if [[ $alias == "bionic" ]]; then
-      image="ubuntu:18.04"
-    elif [[ $alias == "xenial" ]]; then
-      image="ubuntu:16.04"
-    elif [[ $alias == "centos" ]]; then
-      image="images:centos/7"
+# Check if the current user is a member of the lxd group
+if ! groups $(whoami) | grep -oq lxd; then
+    echo "Error: User is not a member of lxd"
+# Check if a module was specified
+elif [ -z $1 ]; then
+    echo "Error: No module was specified"
+# Check if the module is where it should be
+elif [ -f $modules/$1 ]; then
+    # Check if the module is readable
+    if [ -r $modules/$1 ]; then
+        # Load the module and run it
+        source $modules/$1
     else
-      echo "Error: Invalid image selection"
-      exit
+        echo "Error: Module not readable"
     fi
-    echo "Downloading image"
-    lxc image copy $image local: --alias $alias --auto-update
-  fi
-
-  # Create the container and apply resource limitations
-  lxc init -p $profile $alias $container
-  lxc config set $container limits.memory $memory
-  lxc config set $container limits.memory.enforce soft
-  lxc config set $container limits.cpu $cpu
-  lxc config set $container limits.cpu.priority $priority
-  lxc config device add $container root disk path=/ pool=$pool size=$quota 1>/dev/null
-
-  # Transfer the ct-config script to the guest container and execute it locally
-  if [[ $config != "no" ]]; then
-    script="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"/ct-config
-    echo "Configuring $container"
-    lxc start $container 2>/dev/null
-    lxc file push $script $container/root/ct-config 1>/dev/null
-    lxc exec $container -- ./ct-config
-    lxc exec $container -- rm ct-config
-    lxc stop $container
-  fi
-}
-
-# Update containers
-update () {
-  if [ -z $list ]; then
-    echo "Error: No containers were selected for update"
-    exit
-  elif [[ $2 == "all" ]]; then
-    # Update all running containers
-    list=( $(lxc list -c ns | awk '!/NAME/{ if ( $4 == "RUNNING" ) print $2}') )
-  fi
-
-  # Create snapshots and update all running containers in the list
-  for i in "${list[@]}"; do
-    if lxc list $i | grep -oq 'RUNNING'; then
-      snap=update_$(date '+%Y-%m-%d')
-      echo "Creating snapshot $i/$snap"
-      lxc snapshot $i $snap
-      if lxc exec $i -- grep -oq 'Ubuntu' /etc/os-release; then
-        echo "Updating $i"
-        lxc exec $i -- apt-get -y update
-        lxc exec $i -- apt-get -y upgrade
-        lxc exec $i -- apt-get -y dist-upgrade
-        lxc exec $i -- apt-get -y autoremove
-      fi
-    else
-      echo "Error: Target $i is not running or does not exist"
-    fi
-  done
-}
-
-# Run a custom script
-run () {
-  read -p "Select script: " script
-  read -p "Select container: " container
-  if [ ! -f $script ]; then
-      echo "Error: Could not find script"
-      exit
-    elif [[ ! -x $script  ]]; then
-      echo "Error: Selected file is not executable"
-      exit
-    elif ! lxc list $container | grep -oq 'RUNNING'; then
-      echo "Error: Container is not running or does not exist"
-      exit
-    else
-      # Push the script to the container and run it
-      file=$(cat /dev/urandom | tr -dc 'a-z' | fold -w 8 | head -n 1).tmp
-      lxc file push $script $container/tmp/$file 1>/dev/null
-      lxc exec $container -- /tmp/$file
-      lxc exec $container -- rm /tmp/$file
-  fi
-}
-
-# Run the appropriate function based on the first argument
-if [[ $1 = "create" ]]; then
-    container=$2
-    create $container
-  elif [[ $1 = "update" ]]; then
-    update $list $2
-  elif [[ $1 = "get" ]]; then
-    # Download the latest script version
-    ct-get
-  elif [[ $1 = "run" ]]; then
-    run
-  else
-    echo "Error: Invalid argument(s)"
-    exit
+else
+    echo "Error: Module not found"
 fi
+
+exit
