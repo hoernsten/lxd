@@ -22,7 +22,7 @@ cp -r $dir/* $dst
 
 # Modify permissions and group ownership
 chgrp lxd $dst/*
-chmod u=rwx,g=rx,o=r $dst/ct $dst/scripts/*
+chmod u=rwx,g=rx,o=r $dst/ct
 
 # Install the program by creating a symbolic link
 ln -s $dst/ct /usr/local/bin/
