@@ -19,7 +19,7 @@ for i in $containers; do
         lxc start $i
         sleep 3
     fi
-	# Check if the container is running
+    # Check if the container is running
     if lxc list $i | grep -oq 'RUNNING'; then
         # Create a snapshot of the container
         echo "Creating snapshot of $i"
