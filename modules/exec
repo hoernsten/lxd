@@ -3,7 +3,6 @@
 # Prompt for user input
 read -p "Enter container: " container
 read -p "Enter script to be executed: " script
-read -p "Restart container when completed? (y/n): " restart
 
 # Get the scripts directory
 dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )/scripts
@@ -32,9 +31,3 @@ lxc file push $script $container/root/$file 1>/dev/null
 lxc exec $container -- chmod +x $file
 lxc exec $container -- ./$file
 lxc exec $container -- rm $file
-
-# Restart the container if requested
-if [[ $restart == "y" || $restart == "yes" ]]; then
-    echo "Restarting $container"
-    lxc restart $container
-fi
