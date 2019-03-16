@@ -18,7 +18,7 @@ for i in $containers; do
     if lxc list $i | grep -oq 'STOPPED'; then
         echo "Starting $i"
         lxc start $i
-        sleep 5
+        sleep 10
     fi
     # Check if the container is running
     if lxc list $i | grep -oq 'RUNNING'; then
