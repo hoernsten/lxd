@@ -48,7 +48,7 @@ if grep -oq 'CentOS Linux 7' /etc/os-release; then
     yum update -y &> /dev/null
     echo "Installing packages"
     yum install nano net-tools wget htop net-tools epel-release iptables-services yum-utils yum-cron -y &> /dev/null
-    echo "Setting up shop"
+    echo "Applying configurations"
     echo "PermitRootLogin no" >> /etc/ssh/sshd_config
     sed -i 's/BOOTPROTO=dhcp/BOOTPROTO=static/g' /etc/sysconfig/network-scripts/ifcfg-$iface
     echo "IPADDR=$ipaddr" >> /etc/sysconfig/network-scripts/ifcfg-$iface
@@ -72,8 +72,9 @@ if grep -oq 'CentOS Linux 7' /etc/os-release; then
 # Perform various network and system configurations if the guest operating system is Ubuntu 16.04
 elif grep -oq 'Ubuntu 16.04' /etc/os-release; then
     echo "Updating system"
-    apt-get update &> /dev/null
-    echo "Setting up shop"
+    apt-get -y update &> /dev/null
+    apt-get -y upgrade &> /dev/null
+    echo "Applying configurations"
     echo "APT::Periodic::Download-Upgradeable-Packages \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
     echo "APT::Periodic::AutocleanInterval \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
     sed -i "s/$alias/$hostname/g" /etc/hostname
@@ -88,8 +89,9 @@ elif grep -oq 'Ubuntu 16.04' /etc/os-release; then
 # Perform various network and system configurations if the guest operating system is Ubuntu 18.04
 elif grep -oq 'Ubuntu 18.04' /etc/os-release; then
     echo "Updating system"
-    apt-get update &> /dev/null
-    echo "Setting up shop"
+    apt-get -y update &> /dev/null
+    apt-get -y upgrade &> /dev/null
+    echo "Applying configurations"
     echo "APT::Periodic::Download-Upgradeable-Packages \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
     echo "APT::Periodic::AutocleanInterval \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
     sed -i "s/$alias/$hostname/g" /etc/hostname
