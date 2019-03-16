@@ -24,7 +24,6 @@ Then download the repository, extract it and run the install script.
 wget https://github.com/hoernsten/lxd/archive/master.tar.gz
 tar xzvf master.tar.gz
 sudo lxd-master/install
-
 ```
 
 Remember to make sure the current user is a member of the lxd group.
