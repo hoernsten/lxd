@@ -1,5 +1,9 @@
 #!/bin/bash
 
+##################################
+##### Create a new container #####
+##################################
+
 # Prompt for container configuration details
 read -p "Enter container name: " container
 read -p "Select operating system (bionic/xenial/centos) [default=bionic]: " alias
