@@ -73,7 +73,6 @@ if grep -oq 'CentOS Linux 7' /etc/os-release; then
 elif grep -oq 'Ubuntu 16.04' /etc/os-release; then
     echo "Updating system"
     apt-get -y update &> /dev/null
-    apt-get -y upgrade &> /dev/null
     echo "Applying configurations"
     echo "APT::Periodic::Download-Upgradeable-Packages \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
     echo "APT::Periodic::AutocleanInterval \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
@@ -90,7 +89,6 @@ elif grep -oq 'Ubuntu 16.04' /etc/os-release; then
 elif grep -oq 'Ubuntu 18.04' /etc/os-release; then
     echo "Updating system"
     apt-get -y update &> /dev/null
-    apt-get -y upgrade &> /dev/null
     echo "Applying configurations"
     echo "APT::Periodic::Download-Upgradeable-Packages \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
     echo "APT::Periodic::AutocleanInterval \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
