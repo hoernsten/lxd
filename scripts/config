@@ -44,8 +44,6 @@ iptables -P INPUT DROP
 
 # Perform various network and system configurations if the guest operating system is CentOS 7
 if grep -oq 'CentOS Linux 7' /etc/os-release; then
-    echo "Updating system"
-    yum update -y &> /dev/null
     echo "Installing packages"
     yum install nano net-tools wget htop net-tools epel-release iptables-services yum-utils yum-cron -y &> /dev/null
     echo "Applying configurations"
@@ -71,7 +69,7 @@ if grep -oq 'CentOS Linux 7' /etc/os-release; then
 
 # Perform various network and system configurations if the guest operating system is Ubuntu 16.04
 elif grep -oq 'Ubuntu 16.04' /etc/os-release; then
-    echo "Updating system"
+    echo "Updating package information"
     apt-get -y update &> /dev/null
     echo "Applying configurations"
     echo "APT::Periodic::Download-Upgradeable-Packages \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
@@ -87,7 +85,7 @@ elif grep -oq 'Ubuntu 16.04' /etc/os-release; then
 
 # Perform various network and system configurations if the guest operating system is Ubuntu 18.04
 elif grep -oq 'Ubuntu 18.04' /etc/os-release; then
-    echo "Updating system"
+    echo "Updating package information"
     apt-get -y update &> /dev/null
     echo "Applying configurations"
     echo "APT::Periodic::Download-Upgradeable-Packages \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
