@@ -88,4 +88,5 @@ lxc config set $container limits.memory $memory
 lxc config set $container limits.memory.enforce soft
 lxc config set $container limits.cpu $cpu
 lxc config set $container limits.cpu.priority $priority
+lxc config set $container boot.autostart false
 lxc config device add $container root disk path=/ pool=$pool size=$quota 1>/dev/null
