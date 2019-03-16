@@ -12,7 +12,7 @@ elif [ $containers == "all" ]; then
     containers=( $(lxc list -c ns | awk '!/NAME/{ if ( $4 == "RUNNING" ) print $2}') )
 fi
 
-# Update containers 
+# Update containers
 for i in $containers; do
     # Start the container if it is not running
     if lxc list $i | grep -oq 'STOPPED'; then
