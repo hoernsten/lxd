@@ -1,5 +1,9 @@
 #!/bin/bash
 
+##############################################################
+##### Run a module (select module using the $1 argument) #####
+##############################################################
+
 # Define the path to the modules directory
 modules=$(dirname $(readlink -f $0))/modules
 
