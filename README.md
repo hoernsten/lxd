@@ -27,7 +27,7 @@ sudo lxd-master/install
 
 ```
 
-emember to make sure the current user is a member of the lxd group.
+Remember to make sure the current user is a member of the lxd group.
 
 ```
 groups $USER | grep -o lxd
