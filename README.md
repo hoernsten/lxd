@@ -18,10 +18,13 @@ First, make sure you are running the latest version of the LXD snap package.
 sudo snap refresh lxd
 ```
 
-Run the ct-get script on the LXD host to download the latest and greatest this repository has to offer.
+Then download the repository, extract it and run the install script.
 
 ```
-sudo ./ct-get
+wget https://github.com/hoernsten/lxd/archive/master.tar.gz
+tar xzvf master.tar.gz
+sudo lxd-master/install
+
 ```
 
 From then on you’ll be able to run all scripts simply by invoking them. Just remember to make sure the current user is a member of the lxd group before doing so.
@@ -32,33 +35,11 @@ groups $USER | grep -o lxd
 
 ### Usage
 
-To create a new container, use *ct create*. You’ll be asked whether you want to run the configuration script during the creation process, which is something you’ll probably want to do, but this is not required.
+Use the *ct* command followed by the module name to invoke it.
 
 ```
-ct create ct1
-```
-
-I recommend finishing the container creation process by creating a snapshot immediately after.
-
-```
-lxc snapshot ct1 snap_$(date '+%Y-%m-%d')
-```
-
-To update the running containers, use *ct update* and either specify the container names or update all of them in a single go.
-
-```
-ct update all
-ct update ct1 ct2 ...
-```
-
-To run a custom script of your choosing on a container, use *ct run* and select script and container when prompted.
-
-```
-ct run
-```
-
-Use *ct get* to keep the scripts up-to-date.
-
-```
-sudo ct get
+ct create
+ct exec
+ct update
+...
 ```
