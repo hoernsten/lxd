@@ -5,6 +5,9 @@ read -p "Enter container: " container
 read -p "Enter script to be executed: " script
 read -p "Restart container when completed? (y/n): " restart
 
+# Get the scripts directory
+dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )/scripts
+
 # Strip the path from the script variable
 file=$(basename $script)
 
@@ -14,8 +17,12 @@ if ! lxc list --columns="n" | grep -oq $container; then
     exit
 # Check if the script exists
 elif [ ! -f $script ]; then
-    echo "Error: Script $file does not exist"
-    exit
+    # Assume the script is in the scripts directory if not found
+    script=$dir/$script
+    if [ ! -f $script ]; then
+        echo "Error: Could not find script $file"
+        exit
+    fi
 fi
 
 # Push the script to the container, then execute and finally remove it
