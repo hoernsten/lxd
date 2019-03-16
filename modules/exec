@@ -5,22 +5,22 @@ read -p "Enter container: " container
 read -p "Enter script to be executed: " script
 read -p "Restart container when completed? (y/n): " restart
 
+# Strip the path from the script variable
+file=$(basename $script)
+
 # Check if the container exists
 if ! lxc list --columns="n" | grep -oq $container; then
     echo "Error: Container $container does not exist"
     exit
 # Check if the script exists
 elif [ ! -f $script ]; then
-    echo "Error: Script $script does not exist"
+    echo "Error: Script $file does not exist"
     exit
 # Check if the script is executable
 elif [ ! -x $script ]; then
-    echo "Error: Script $script is not executable"
+    echo "Error: Script $file is not executable"
     exit
 fi
-
-# Strip the path from the script variable
-file=$(basename $script)
 
 # Push the script to the container, then execute and finally remove it
 echo "Configuring $container"
