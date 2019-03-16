@@ -18,6 +18,7 @@ read -p "Enter primary DNS IP: " dns1
 read -p "Enter secondary DNS IP: " dns2
 read -p "Enter primary network interface [default=eth0]: " iface
 read -p "Enter remote syslog server [default=none]: " syslog
+read -p "Reboot when completed? (y/n) [default=no]: " reboot
 
 # Revert to default values if no input is provided
 if [ -z $hostname ]; then
@@ -100,4 +101,10 @@ elif grep -oq 'Ubuntu 18.04' /etc/os-release; then
     netplan apply
     sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
     ufw enable &> /dev/null
+fi
+
+# Reboot the system
+if [[ $reboot == "y" || $reboot == "yes" ]]; then
+    echo "Rebooting $container"
+    reboot
 fi
