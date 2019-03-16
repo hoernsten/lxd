@@ -12,7 +12,7 @@ dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 # Define target directory
 dst=/opt/lxd
 
-# Create the target directory if it does not exist
+# Create the target directory
 if [[ ! -d $dst ]]; then
     mkdir -p $dst
 fi
@@ -24,5 +24,8 @@ cp -r $dir/* $dst
 chgrp lxd $dst/ct
 chmod u=rwx,g=rx,o=r $dst/ct
 
-# Install the program by creating a symbolic link
-ln -s $dst/ct /usr/local/bin/
+# Install the program by creating a symlink
+
+if [ ! -f /usr/local/bin/ct ]; then
+    ln -s $dst/ct /usr/local/bin/
+fi
