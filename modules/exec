@@ -1,1 +1,36 @@
+#!/bin/bash
 
+# Prompt for user input
+read -p "Enter container: " container
+read -p "Enter script to be executed: " script
+read -p "Restart container when completed? (y/n): " restart
+
+# Check if the container exists
+if ! lxc list --columns="n" | grep -oq $container; then
+    echo "Error: Container $container does not exist"
+    exit
+# Check if the script exists
+elif [ ! -f $script ]; then
+    echo "Error: Script $script does not exist"
+    exit
+# Check if the script is executable
+elif [ ! -x $script ]; then
+    echo "Error: Script $script is not executable"
+    exit
+fi
+
+# Strip the path from the script variable
+file=$(basename $script)
+
+# Push the script to the container, then execute and finally remove it
+echo "Configuring $container"
+lxc start $container 2>/dev/null
+lxc file push $script $container/root/$file 1>/dev/null
+lxc exec $container -- ./$file
+lxc exec $container -- rm $file
+
+# Restart the container if requested
+if [[ $restart == "y" || $restart == "yes" ]]; then
+    echo "Restarting $container"
+    lxc restart $container
+fi
