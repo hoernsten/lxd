@@ -18,11 +18,11 @@ if [[ ! -d $dst ]]; then
 fi
 
 # Copy the files to the target directory
-cp $dir/* $dst
+cp -r $dir/* $dst
 
 # Modify permissions and group ownership
 chgrp -R lxd $dst/*
-chmod u=rwx,g=rwx,o=r $dst/ct
+chmod u=rwx,g=rwx,o=r $dst/ct $dst/scripts/*
 
 # Install the program by creating a symbolic link
 ln -s $dst/ct /usr/local/bin/
