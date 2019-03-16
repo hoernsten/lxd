@@ -27,7 +27,7 @@ sudo lxd-master/install
 
 ```
 
-From then on you’ll be able to run all scripts simply by invoking them. Just remember to make sure the current user is a member of the lxd group before doing so.
+emember to make sure the current user is a member of the lxd group.
 
 ```
 groups $USER | grep -o lxd
