@@ -1,5 +1,9 @@
 #!/bin/bash
 
+####################################################
+##### Configure a newly installed guest system #####
+####################################################
+
 # Perform a crude check to make sure the script is not running on a host device
 if [ -d /snap/lxd ]; then
     echo "Error: Only run this script on guest containers"
