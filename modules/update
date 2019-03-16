@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#############################################
+##### Update and upgrade a guest system #####
+#############################################
+
 # Prompt for the containers
 read -p "Enter container(s) to be updated: " containers
 
