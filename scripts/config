@@ -105,6 +105,6 @@ fi
 
 # Reboot the system
 if [[ $reboot == "y" || $reboot == "yes" ]]; then
-    echo "Rebooting $container"
+    echo "Rebooting $hostname"
     reboot
 fi
