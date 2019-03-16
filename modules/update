@@ -14,7 +14,12 @@ fi
 
 # Update containers 
 for i in $containers; do
-    # Check if the container is running
+    # Start the container if it is not running
+	if lxc list $i | grep -oq 'STOPPED'; then
+	    lxc start $i
+		sleep 3
+	fi
+	# Check if the container is running
     if lxc list $i | grep -oq 'RUNNING'; then
         # Create a snapshot of the container
         echo "Creating snapshot of $i"
@@ -30,6 +35,6 @@ for i in $containers; do
             lxc exec $i -- yum -y update
         fi
     else
-      echo "Error: Container $i is not running or does not exist"
+      echo "Error: Container $i does not exist"
     fi
 done
