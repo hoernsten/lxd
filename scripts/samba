@@ -8,7 +8,7 @@
 read -p "Samba user: " user
 
 # Install the Samba packages
-apt install samba
+apt install -y samba
 
 # Create a new Samba user
 smbpasswd -a $user
