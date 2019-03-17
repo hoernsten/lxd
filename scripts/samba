@@ -16,6 +16,7 @@ smbpasswd -e $user
 
 # Allow inbound Samba traffic
 ufw allow 'Samba'
+ufw enable
 
 # Enable the SMB/NMB services
 systemctl enable smbd nmbd
