@@ -1,0 +1,18 @@
+#!/bin/bash
+
+########################################
+##### Install dhcpd (Ubuntu 18.04) #####
+########################################
+
+# Install the dhcpd package
+apt install -y isc-dhcp-server
+
+# Add the interface to the defaults file
+echo 'INTERFACESv4="eth0"' >> /etc/default/isc-dhcp-server
+
+# Allow inbound DHCP traffic
+ufw allow 67/tcp
+ufw allow 67/udp
+
+# Enable the DHCP service
+systemctl enable isc-dhcp-server
