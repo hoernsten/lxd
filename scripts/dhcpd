@@ -13,6 +13,7 @@ echo 'INTERFACESv4="eth0"' >> /etc/default/isc-dhcp-server
 # Allow inbound DHCP traffic
 ufw allow 67/tcp
 ufw allow 67/udp
+ufw enable
 
 # Enable the DHCP service
 systemctl enable isc-dhcp-server
