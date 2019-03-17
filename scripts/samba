@@ -11,6 +11,7 @@ read -p "Samba user: " user
 apt install -y samba
 
 # Create a new Samba user
+useradd --shell /bin/false $user
 smbpasswd -a $user
 smbpasswd -e $user
 
