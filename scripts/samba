@@ -1,0 +1,21 @@
+#!/bin/bash
+
+########################################
+##### Install Samba (Ubuntu 18.04) #####
+########################################
+
+# Prompt for the Samba user
+read -p "Samba user: " user
+
+# Install the Samba packages
+apt install samba
+
+# Create a new Samba user
+smbpasswd -a $user
+smbpasswd -e $user
+
+# Allow inbound Samba traffic
+ufw allow 'Samba'
+
+# Enable the SMB/NMB services
+systemctl enable smbd nmbd
