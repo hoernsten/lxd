@@ -1,8 +1,8 @@
 #!/bin/bash
 
-#################################################################
-##### Select a custom script and run it on the guest system #####
-#################################################################
+#################################################
+##### Run a custom script on a guest system #####
+#################################################
 
 # Prompt for user input
 read -p "Enter container: " container
