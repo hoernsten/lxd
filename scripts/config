@@ -4,11 +4,17 @@
 ##### Configure a newly installed guest system #####
 ####################################################
 
-# Perform a crude check to make sure the script is not running on a host device
+# Perform a crude check to make sure the script is not running on a host system
 if [ -d /snap/lxd ]; then
-    echo "Error: Only run this script on guest containers"
+    echo "Error: Do not run on a host system"
     exit
 fi
+
+# Verify connectivity before proceeding
+while ! ping -c 1 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
+    echo "Network: Unable to reach archive.ubuntu.com"
+    sleep 3
+done
 
 # Get the current hostname
 alias="$(cat /etc/hostname)"
