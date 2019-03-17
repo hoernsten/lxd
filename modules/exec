@@ -29,7 +29,7 @@ elif [ ! -f $script ]; then
 fi
 
 # Push the script to the container, then execute and finally remove it
-echo "Configuring $container"
+echo "Running $file on $container"
 lxc start $container 2>/dev/null
 lxc file push $script $container/root/$file 1>/dev/null
 lxc exec $container -- chmod +x $file
