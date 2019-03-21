@@ -25,7 +25,6 @@ chgrp lxd $dst/ct
 chmod u=rwx,g=rx,o=r $dst/ct
 
 # Install the program by creating a symlink
-
 if [ ! -f /usr/local/bin/ct ]; then
     ln -s $dst/ct /usr/local/bin/
 fi
