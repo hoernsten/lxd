@@ -6,7 +6,7 @@
 
 # Prompt for user input
 read -p "Enter container: " container
-read -p "Enter script to be executed: " script
+read -e -p "Enter script to be executed: " script
 
 # Get the scripts directory
 dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )/scripts
