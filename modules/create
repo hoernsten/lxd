@@ -125,6 +125,10 @@ else
     exit
 fi
 
+# Create a snapshot
+echo "Creating snapshot"
+lxc snapshot $container snap_$(date '+%Y-%m-%d:%T')
+
 # Start the container
 echo "Starting $container"
 lxc start $container
