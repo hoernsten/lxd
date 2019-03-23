@@ -33,14 +33,17 @@ Use the *ct* command followed by the module name to invoke it, then enter any va
 
 ```
 lxduser@ubuntu:~$ ct create
+Enter image [default=ubuntu/18.04]: ubuntu/18.04
 Enter container name: c1
-Select operating system (bionic/xenial/centos) [default=bionic]: bionic
-Set container disk quota (e.g. 500MB or 10GB) [default=5GB]: 10GB
-Set container memory limit (e.g. 512MB or 4GB) [default=512MB]: 1024MB
-Set container CPU core count limit (1-4) [default=1]: 2
-Set container CPU priority (1-10) [default=5]: 3
-Enter container profile [default=default]: 
+Enter container disk quota (e.g. 500MB or 10GB) [default=5GB]: 10GB
+Enter container memory limit (e.g. 512MB or 4GB) [default=512MB]: 1024MB
+Enter container CPU core count limit (1-4) [default=1]: 2
+Enter container CPU priority (1-10) [default=5]: 8
+Enter container profile [default=default]: default
 Enter storage pool [default=default]: local
+Copying image
+Image copied successfully!
 Creating c1
+Starting c1
 lxduser@ubuntu:~$
 ```
