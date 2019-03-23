@@ -5,8 +5,8 @@
 ##################################
 
 # Prompt for container configuration details
-read -p "Enter image [default=ubuntu/18.04]: " image
 read -p "Enter container name: " container
+read -p "Enter container image [default=ubuntu/18.04]: " image
 read -p "Enter container disk quota (e.g. 500MB or 10GB) [default=5GB]: " quota
 read -p "Enter container memory limit (e.g. 512MB or 4GB) [default=512MB]: " memory
 read -p "Enter container CPU core count limit (1-$(nproc)) [default=1]: " cpu
