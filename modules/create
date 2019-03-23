@@ -106,7 +106,7 @@ echo "Copying image"
 lxc image copy images:$image local: --alias $image --auto-update
 
 # Create the container
-lxc init -p $profile $image $container
+lxc launch -p $profile $image $container
 
 # Apply resource constraints
 if lxc list --columns="n" | grep -oq $container; then
