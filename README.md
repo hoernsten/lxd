@@ -44,12 +44,13 @@ Enter storage pool [default=default]: local
 Copying image
 Image copied successfully!
 Creating c1
+Creating snapshot
 Starting c1
 lxduser@ubuntu:~$
 lxduser@ubuntu:~$ lxc list
 +-----------+---------+--------------------+------+------------+-----------+
 |   NAME    |  STATE  |        IPV4        | IPV6 |    TYPE    | SNAPSHOTS |
 +-----------+---------+--------------------+------+------------+-----------+
-| c1        | RUNNING | 192.168.0.2 (eth0) |      | PERSISTENT |           |
+| c1        | RUNNING | 192.168.0.2 (eth0) |      | PERSISTENT | 1         |
 +-----------+---------+--------------------+------+------------+-----------+
 ```
