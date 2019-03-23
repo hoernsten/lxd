@@ -11,7 +11,7 @@ In order to guarantee a flawless execution, there are certain criteria that shou
 
 This is not to say you will not be able to run the scripts using any other setup, but this is the environment in which they have been tested and confirmed to work without major issues.
 
-### Deployment
+### Installation
 Download the repository, extract it and run the install script.
 
 ```
