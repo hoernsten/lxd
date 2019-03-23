@@ -33,8 +33,8 @@ Use the *ct* command followed by the module name to invoke it, then enter any va
 
 ```
 lxduser@ubuntu:~$ ct create
-Enter image [default=ubuntu/18.04]: ubuntu/18.04
 Enter container name: c1
+Enter container image [default=ubuntu/18.04]: ubuntu/18.04
 Enter container disk quota (e.g. 500MB or 10GB) [default=5GB]: 10GB
 Enter container memory limit (e.g. 512MB or 4GB) [default=512MB]: 1024MB
 Enter container CPU core count limit (1-4) [default=1]: 2
@@ -46,4 +46,10 @@ Image copied successfully!
 Creating c1
 Starting c1
 lxduser@ubuntu:~$
+lxduser@ubuntu:~$ lxc list
++-----------+---------+--------------------+------+------------+-----------+
+|   NAME    |  STATE  |        IPV4        | IPV6 |    TYPE    | SNAPSHOTS |
++-----------+---------+--------------------+------+------------+-----------+
+| c1        | RUNNING | 192.168.0.2 (eth0) |      | PERSISTENT |           |
++-----------+---------+--------------------+------+------------+-----------+
 ```
