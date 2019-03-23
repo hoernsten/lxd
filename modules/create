@@ -5,7 +5,7 @@
 ##################################
 
 # Prompt for container configuration details
-read -p "Enter image [default=ubuntu:18.04]: " image
+read -p "Enter image [default=ubuntu/18.04]: " image
 read -p "Enter container name: " container
 read -p "Enter container disk quota (e.g. 500MB or 10GB) [default=5GB]: " quota
 read -p "Enter container memory limit (e.g. 512MB or 4GB) [default=512MB]: " memory
@@ -92,7 +92,7 @@ fi
 
 # Revert to default image if no input is provided
 if [ -z $image ]; then
-    image=ubuntu:18.04
+    image=ubuntu/18.04
 fi
 
 # Verify connectivity before proceeding
@@ -103,7 +103,7 @@ done
 
 # Copy remote image to the local image store or exit if it doesn't exist
 echo "Downloading image"
-lxc image copy $image local: --alias $image --auto-update || exit
+lxc image copy images:$image local: --alias $image --auto-update || exit
 
 # Create the container
 lxc init -p $profile $image $container
