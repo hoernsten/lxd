@@ -30,6 +30,7 @@ fi
 
 if [ -z $memory ]; then
     memory=512MB
+# Check if the value provided is valid
 elif [[ ! $memory =~ ^[0-9]{1,}(MB|GB)$ ]]; then
     echo "Error: Memory limit is invalid"
     exit
@@ -37,6 +38,18 @@ fi
 
 if [ -z $cpu ]; then
     cpu=1
+# Check if the value provided is a valid number that does not start with "0"
+elif [[ $cpu =~ ^([1-9]{1}|[1-9][0-9]{1,})$ ]]; then
+    # Check if there are enough cores and abort if there isn't
+    if (( $cpu <= $(nproc --all) )); then
+        :
+    else
+        echo "Error: Not enough cores"
+        exit
+    fi
+else
+    echo "Error: Invalid CPU core value entered"
+    exit
 fi
 
 if [ -z $priority ]; then
