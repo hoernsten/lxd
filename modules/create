@@ -109,7 +109,6 @@ lxc image copy images:$image local: --alias $image --auto-update
 if lxc image list --columns="l" | grep -oq $image; then
     lxc init -p $profile $image $container
 else
-    echo "Error: Image not found"
     exit
 fi
 
