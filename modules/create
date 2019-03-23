@@ -101,13 +101,12 @@ while ! ping -c 1 -W 1 cloud-images.ubuntu.com > /dev/null 2>&1; do
 	sleep 3
 done
 
-# Copy remote image to the local image store or exit if it doesn't exist
+# Copy remote image to the local image store
 echo "Copying image"
-lxc image copy images:$image local: --alias $image --auto-update || exit
-sleep 3
+lxc image copy images:$image local: --alias $image --auto-update
 
 # Create the container
-lxc init -p $profile $image $container
+lxc init -p $profile $image $container || exit
 
 # Apply resource limits
 lxc config set $container limits.memory $memory
