@@ -32,7 +32,7 @@ if [ -z $memory ]; then
     memory=512MB
 # Check if the value provided is valid
 elif [[ ! $memory =~ ^[0-9]{1,}(MB|GB)$ ]]; then
-    echo "Error: Memory limit is invalid"
+    echo "Error: Invalid memory limit"
     exit
 fi
 
@@ -48,12 +48,16 @@ elif [[ $cpu =~ ^([1-9]{1}|[1-9][0-9]{1,})$ ]]; then
         exit
     fi
 else
-    echo "Error: Invalid CPU core value entered"
+    echo "Error: Invalid CPU core value"
     exit
 fi
 
 if [ -z $priority ]; then
     priority=5
+# Check if the value provided is within the 1-10 range
+elif [[ ! $priority =~ ^([1-9]|10)$ ]]; then
+    echo "Error: Invalid priority value"
+    exit
 fi
 
 if [ -z $profile ]; then
