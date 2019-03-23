@@ -101,17 +101,22 @@ while ! ping -c 1 -W 1 cloud-images.ubuntu.com > /dev/null 2>&1; do
 	sleep 3
 done
 
-# Copy remote image to the local image store
+# Copy the remote image to the local image store
 echo "Copying image"
 lxc image copy images:$image local: --alias $image --auto-update
 
 # Create the container
-lxc init -p $profile $image $container || exit
+lxc init -p $profile $image $container
 
-# Apply resource limits
-lxc config set $container limits.memory $memory
-lxc config set $container limits.memory.enforce soft
-lxc config set $container limits.cpu $cpu
-lxc config set $container limits.cpu.priority $priority
-lxc config set $container boot.autostart false
-lxc config device add $container root disk path=/ pool=$pool size=$quota 1>/dev/null
+# Apply resource constraints
+if lxc list --columns="n" | grep -oq $container; then
+    lxc config set $container limits.memory $memory
+    lxc config set $container limits.memory.enforce soft
+    lxc config set $container limits.cpu $cpu
+    lxc config set $container limits.cpu.priority $priority
+    lxc config set $container boot.autostart false
+    lxc config device add $container root disk path=/ pool=$pool size=$quota 1>/dev/null
+else
+    echo "Error: Container creation failed"
+    exit
+fi
