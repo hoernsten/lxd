@@ -14,16 +14,6 @@ read -p "Set container CPU priority (1-10) [default=5]: " priority
 read -p "Enter container profile [default=default]: " profile
 read -p "Enter storage pool [default=default]: " pool
 
-# Generate a randomized container name if none was provided
-if [ -z $container ]; then
-    container=$(cat /dev/urandom | tr -dc 'a-z' | fold -w 12 | head -n 1)
-fi
-
-# Revert to default values if no input is provided
-if [ -z $alias ]; then
-    alias=bionic
-fi
-
 if [ -z $quota ]; then
     quota=5GB
 fi
@@ -60,12 +50,9 @@ elif [[ ! $priority =~ ^([1-9]|10)$ ]]; then
     exit
 fi
 
-if [ -z $profile ]; then
-    profile=default
-fi
-
-if [ -z $pool ]; then
-    pool=default
+# Generate a randomized container name if none was provided
+if [ -z $container ]; then
+    container=$(cat /dev/urandom | tr -dc 'a-z' | fold -w 12 | head -n 1)
 fi
 
 # Check if the container already exists
@@ -74,16 +61,31 @@ if lxc list --columns="n" | grep -oq $container; then
     exit
 fi
 
+# Revert to the default pool if no input is provided
+if [ -z $pool ]; then
+    pool=default
+fi
+
 # Check if the storage pool exists
 if lxc storage show $pool 2>&1 | grep -oq 'Error: not found'; then
     echo "Error: Storage pool does not exist"
     exit
 fi
 
+# Revert to the default profile if no input is provided
+if [ -z $profile ]; then
+    profile=default
+fi
+
 # Check if the container profile exists
 if lxc profile show $profile 2>&1 | grep -oq 'Error: not found'; then
     echo "Error: Container profile does not exist"
     exit
+fi
+
+# Revert to default image if no input is provided
+if [ -z $alias ]; then
+    alias=bionic
 fi
 
 # Download the image if it does not exist
