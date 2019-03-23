@@ -104,6 +104,7 @@ done
 # Copy remote image to the local image store or exit if it doesn't exist
 echo "Copying image"
 lxc image copy images:$image local: --alias $image --auto-update || exit
+sleep 3
 
 # Create the container
 lxc init -p $profile $image $container
