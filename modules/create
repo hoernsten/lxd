@@ -37,7 +37,7 @@ if [ -z $cpu ]; then
     cpu=1
 # Check if the value provided is a valid number that does not start with "0"
 elif [[ $cpu =~ ^([1-9]{1}|[1-9][0-9]{1,})$ ]]; then
-    # Check if there are enough cores and abort if there isn't
+    # Check if there are enough cores available
     if (( $cpu <= $(nproc --all) )); then
         :
     else
