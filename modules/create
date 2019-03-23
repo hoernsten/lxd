@@ -5,12 +5,12 @@
 ##################################
 
 # Prompt for container configuration details
+read -p "Enter image [default=ubuntu:18.04]: " image
 read -p "Enter container name: " container
-read -p "Select operating system (bionic/xenial/centos) [default=bionic]: " alias
-read -p "Set container disk quota (e.g. 500MB or 10GB) [default=5GB]: " quota
-read -p "Set container memory limit (e.g. 512MB or 4GB) [default=512MB]: " memory
-read -p "Set container CPU core count limit (1-$(nproc)) [default=1]: " cpu
-read -p "Set container CPU priority (1-10) [default=5]: " priority
+read -p "Enter container disk quota (e.g. 500MB or 10GB) [default=5GB]: " quota
+read -p "Enter container memory limit (e.g. 512MB or 4GB) [default=512MB]: " memory
+read -p "Enter container CPU core count limit (1-$(nproc)) [default=1]: " cpu
+read -p "Enter container CPU priority (1-10) [default=5]: " priority
 read -p "Enter container profile [default=default]: " profile
 read -p "Enter storage pool [default=default]: " pool
 
@@ -91,34 +91,24 @@ if lxc profile show $profile 2>&1 | grep -oq 'Error: not found'; then
 fi
 
 # Revert to default image if no input is provided
-if [ -z $alias ]; then
-    alias=bionic
+if [ -z $image ]; then
+    image=ubuntu:18.04
 fi
 
-# Download the image if it does not exist
-if ! lxc image list | grep -oq $alias; then
-    if [[ $alias == "bionic" ]]; then
-        image="ubuntu:18.04"
-    elif [[ $alias == "xenial" ]]; then
-        image="ubuntu:16.04"
-    elif [[ $alias == "centos" ]]; then
-        image="images:centos/7"
-    else
-        echo "Error: Invalid image selection"
-        exit
-    fi
-    # Verify connectivity before proceeding
-    while ! ping -c 1 -W 1 cloud-images.ubuntu.com > /dev/null 2>&1; do
-        echo "Network: Unable to reach cloud-images.ubuntu.com"
-        sleep 3
-    done
-    # Copy remote image to the local image store
-    echo "Downloading image"
-    lxc image copy $image local: --alias $alias --auto-update
-fi
+# Verify connectivity before proceeding
+while ! ping -c 1 -W 1 cloud-images.ubuntu.com > /dev/null 2>&1; do
+	echo "Network: Unable to reach cloud-images.ubuntu.com"
+	sleep 3
+done
 
-# Create the container and apply resource limits
-lxc init -p $profile $alias $container
+# Copy remote image to the local image store or exit if it doesn't exist
+echo "Downloading image"
+lxc image copy $image local: --alias $image --auto-update || exit
+
+# Create the container
+lxc init -p $profile $image $container
+
+# Apply resource limits
 lxc config set $container limits.memory $memory
 lxc config set $container limits.memory.enforce soft
 lxc config set $container limits.cpu $cpu
