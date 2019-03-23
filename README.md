@@ -29,11 +29,18 @@ groups $USER | grep -o lxd
 
 ### Usage
 
-Use the *ct* command followed by the module name to invoke it, then enter any values as needed when prompted.
+Use the *ct* command followed by the module name to invoke it, then enter any values as needed when prompted. For example, to create a new container you would run *ct create*, enter a few values and then you're done.
 
 ```
-ct create
-ct exec
-ct update
-...
+lxduser@ubuntu:~$ ct create
+Enter container name: c1
+Select operating system (bionic/xenial/centos) [default=bionic]: bionic
+Set container disk quota (e.g. 500MB or 10GB) [default=5GB]: 10GB
+Set container memory limit (e.g. 512MB or 4GB) [default=512MB]: 1024MB
+Set container CPU core count limit (1-4) [default=1]: 2
+Set container CPU priority (1-10) [default=5]: 3
+Enter container profile [default=default]: 
+Enter storage pool [default=default]: local
+Creating c1
+lxduser@ubuntu:~$
 ```
