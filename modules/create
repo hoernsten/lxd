@@ -14,10 +14,16 @@ read -p "Set container CPU priority (1-10) [default=5]: " priority
 read -p "Enter container profile [default=default]: " profile
 read -p "Enter storage pool [default=default]: " pool
 
+# Revert to the default quota if no input is provided
 if [ -z $quota ]; then
     quota=5GB
+# Check if the value provided is a valid number that does not start with "0" and ends with either "MB" or "GB"
+elif [[ ! $quota =~ ^([1-9]{1}|[1-9][0-9]{1,})(MB|GB)$ ]]; then
+    echo "Error: Invalid quota"
+    exit
 fi
 
+# Revert to the default memory limit if no input is provided
 if [ -z $memory ]; then
     memory=512MB
 # Check if the value provided is valid
@@ -26,6 +32,7 @@ elif [[ ! $memory =~ ^[0-9]{1,}(MB|GB)$ ]]; then
     exit
 fi
 
+# Revert to the default cpu count if no input is provided
 if [ -z $cpu ]; then
     cpu=1
 # Check if the value provided is a valid number that does not start with "0"
