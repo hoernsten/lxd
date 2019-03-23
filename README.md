@@ -29,7 +29,7 @@ groups $USER | grep -o lxd
 
 ### Usage
 
-Use the *ct* command followed by the module name to invoke it.
+Use the *ct* command followed by the module name to invoke it, then enter any values as needed when prompted.
 
 ```
 ct create
