@@ -110,7 +110,7 @@ if lxc image list --columns="l" | grep -oq $image; then
     lxc init -p $profile $image $container
 else
     echo "Error: Image not found"
-	exit
+    exit
 fi
 
 # Apply resource constraints
