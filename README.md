@@ -54,3 +54,5 @@ lxduser@ubuntu:~$ lxc list
 | c1        | RUNNING | 192.168.0.2 (eth0) |      | PERSISTENT | 1         |
 +-----------+---------+--------------------+------+------------+-----------+
 ```
+### Upcoming Features
+* The ability to preseed the create module
