@@ -56,3 +56,4 @@ lxduser@ubuntu:~$ lxc list
 ```
 ### Upcoming Features
 * The ability to preseed the create module
+* A basic host installation and configuration script
