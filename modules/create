@@ -102,7 +102,7 @@ while ! ping -c 1 -W 1 cloud-images.ubuntu.com > /dev/null 2>&1; do
 done
 
 # Copy remote image to the local image store or exit if it doesn't exist
-echo "Downloading image"
+echo "Copying image"
 lxc image copy images:$image local: --alias $image --auto-update || exit
 
 # Create the container
