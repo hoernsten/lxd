@@ -12,19 +12,14 @@ In order to guarantee a flawless execution, there are certain criteria that shou
 This is not to say you will not be able to run the scripts using any other setup, but this is the environment in which they have been tested and confirmed to work without major issues.
 
 ### Deployment
-First, make sure you are running the latest version of the LXD snap package.
-
-```
-sudo snap refresh lxd
-```
-
-Then download the repository, extract it and run the install script.
+Download the repository, extract it and run the install script.
 
 ```
 wget https://github.com/hoernsten/lxd/archive/master.tar.gz
 tar xzvf master.tar.gz
 sudo lxd-master/install
 ```
+It will then be installed to /opt/lxd, and a symbolic link will be created in /usr/local/bin.
 
 Remember to make sure the current user is a member of the lxd group.
 
