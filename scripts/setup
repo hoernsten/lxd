@@ -107,7 +107,7 @@ elif grep -oq 'Ubuntu 18.04' /etc/os-release; then
     echo "            addresses: [$ipaddr/$prefix]" >> /etc/netplan/50-cloud-init.yaml
     echo "            gateway4: $gateway" >> /etc/netplan/50-cloud-init.yaml
     echo "            nameservers:" >> /etc/netplan/50-cloud-init.yaml
-    echo "                addresses: [$dns1,$dns2]" >> /etc/netplan/50-cloud-init.yaml
+    echo "                addresses: [$dns1, $dns2]" >> /etc/netplan/50-cloud-init.yaml
     netplan apply
     ufw enable &> /dev/null
 fi
