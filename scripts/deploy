@@ -1,8 +1,8 @@
 #!/bin/bash
 
-######################################################
-##### Deploy services on a guest system (Ubuntu) #####
-######################################################
+#############################################
+##### Deploy services on a guest system #####
+#############################################
 
 # Perform a crude check to make sure the script is not running on a host system
 if [ -d /snap/lxd ]; then
