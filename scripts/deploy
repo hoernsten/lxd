@@ -24,7 +24,7 @@ fi
 if grep -E -oq 'Ubuntu (18.04|16.04)' /etc/os-release; then
 	if [[ $service == dns ]]; then
 		# Install the packages
-        apt update -y
+		apt update -y
 		apt install -y bind9 ufw
 		# Allow inbound DNS traffic
 		ufw allow 53/tcp
@@ -35,7 +35,7 @@ if grep -E -oq 'Ubuntu (18.04|16.04)' /etc/os-release; then
 		systemctl enable bind9
 	elif [[ $service == dhcp ]]; then
 		# Install the packages
-        apt update -y
+		apt update -y
 		apt install -y isc-dhcp-server ufw
 		# Add the interface to the defaults file
 		read -p "Assign network interface(s): " interface
