@@ -11,10 +11,12 @@ if [ -d /snap/lxd ]; then
 fi
 
 # Verify connectivity before proceeding
-#while ! ping -c 1 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
-#    echo "Network: Unable to reach archive.ubuntu.com"
-#    sleep 3
-#done
+if dpkg-query -l | grep -oq iputils-ping; then
+    while ! ping -c 1 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
+        echo "Network: Unable to reach archive.ubuntu.com"
+        sleep 3
+   done
+fi
 
 # Get the current hostname
 alias="$(cat /etc/hostname)"
