@@ -8,6 +8,7 @@ In order to guarantee a flawless execution, there are certain criteria that shou
 * The lxd snap is installed and up to date
 * LXD has already been configured
 * The storage backend is either zfs or btrfs
+* Quotas are enabled for the storage backend of choice
 
 This is not to say you will not be able to run the scripts using any other setup, but this is the environment in which they have been tested and confirmed to work without major issues.
 
