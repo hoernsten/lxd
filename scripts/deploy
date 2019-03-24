@@ -31,7 +31,7 @@ if [[ $service == dns ]]; then
     ufw allow 53/udp
     # Enable the BIND service
     systemctl enable bind9
-elif [[ $service == dhcp ]]
+elif [[ $service == dhcp ]]; then
     # Install the dhcpd package
     apt install -y isc-dhcp-server
     # Add the interface to the defaults file
