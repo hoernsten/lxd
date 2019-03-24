@@ -5,14 +5,15 @@
 ##################################
 
 # Prompt for container configuration details
-read -p "Enter container name: " container
-read -p "Enter container image [default=ubuntu/18.04]: " image
-read -p "Enter container disk quota (e.g. 500MB or 10GB) [default=5GB]: " quota
-read -p "Enter container memory limit (e.g. 512MB or 4GB) [default=512MB]: " memory
-read -p "Enter container CPU core count limit (1-$(nproc)) [default=1]: " cpu
-read -p "Enter container CPU priority (1-10) [default=5]: " priority
-read -p "Enter container profile [default=default]: " profile
+read -p "Container name [default=random]: " container
+read -p "Container image [default=ubuntu/18.04]: " image
+read -p "Container disk quota (e.g. 500MB or 10GB) [default=5GB]: " quota
+read -p "Container memory limit (e.g. 512MB or 4GB) [default=512MB]: " memory
+read -p "Container CPU core count limit (1-$(nproc)) [default=1]: " cpu
+read -p "Container CPU priority (1-10) [default=5]: " priority
+read -p "Container profile [default=default]: " profile
 read -p "Enter storage pool [default=default]: " pool
+read -p "Autostart container at boot time [default=no] (yes/no): " autostart
 
 # Revert to the default quota if no input is provided
 if [ -z $quota ]; then
@@ -49,12 +50,20 @@ else
     exit
 fi
 
+# Revert to the default priority level if no input is provided
 if [ -z $priority ]; then
     priority=5
 # Check if the value provided is within the 1-10 range
 elif [[ ! $priority =~ ^([1-9]|10)$ ]]; then
     echo "Error: Invalid priority value"
     exit
+fi
+
+# Revert to the default autostart option if autostart is not desired
+if [ $autostart == "yes" ]; then
+    autostart=true
+else
+    autostart=false
 fi
 
 # Generate a randomized container name if none was provided
@@ -118,7 +127,7 @@ if lxc list --columns="n" | grep -oq $container; then
     lxc config set $container limits.memory.enforce soft
     lxc config set $container limits.cpu $cpu
     lxc config set $container limits.cpu.priority $priority
-    lxc config set $container boot.autostart false
+    lxc config set $container boot.autostart $autostart
     lxc config device add $container root disk path=/ pool=$pool size=$quota 1>/dev/null
 else
     echo "Error: Container creation failed"
