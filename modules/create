@@ -6,7 +6,7 @@
 
 # Prompt for container configuration details
 read -p "Container name [default=random]: " container
-read -p "Container image [default=ubuntu/18.04]: " image
+read -p "Container image [default=ubuntu:18.04]: " image
 read -p "Container disk quota (e.g. 500MB or 10GB) [default=5GB]: " quota
 read -p "Container memory limit (e.g. 512MB or 4GB) [default=512MB]: " memory
 read -p "Container CPU core count limit (1-$(nproc)) [default=1]: " cpu
@@ -101,23 +101,14 @@ fi
 
 # Revert to default image if no input is provided
 if [ -z $image ]; then
-    image=ubuntu/18.04
+    image=ubuntu:18.04
 fi
 
-# Verify connectivity before proceeding
-while ! ping -c 1 -W 1 cloud-images.ubuntu.com > /dev/null 2>&1; do
-	echo "Network: Unable to reach cloud-images.ubuntu.com"
-	sleep 3
-done
-
-# Copy the remote image to the local image store
-#echo "Copying image"
-#lxc image copy images:$image local: --alias $image --auto-update
-
-# Check if the image exists and create the container
-if lxc image list --columns="l" | grep -oq $image; then
-    lxc init -p $profile $image $container
+# Check if the image exists locally and create the container
+if lxc image list local:$image --columns="l" | grep -q $image; then
+    lxc init -p $profile local:$image $container
 else
+    echo "Error: Image could not be found"
     exit
 fi
 
