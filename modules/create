@@ -12,8 +12,8 @@ read -p "Container memory limit (e.g. 512MB or 4GB) [default=512MB]: " memory
 read -p "Container CPU core count limit (1-$(nproc)) [default=1]: " cpu
 read -p "Container CPU priority (1-10) [default=5]: " priority
 read -p "Container profile [default=default]: " profile
-read -p "Enter storage pool [default=default]: " pool
 read -p "Autostart container at boot time (yes/no) [default=no]: " autostart
+read -p "Enter storage pool [default=default]: " pool
 
 # Revert to the default quota if no input is provided
 if [ -z $quota ]; then
@@ -124,10 +124,6 @@ else
     echo "Error: Container creation failed"
     exit
 fi
-
-# Create a snapshot
-echo "Creating snapshot"
-lxc snapshot $container snap_$(date '+%Y-%m-%d:%T')
 
 # Start the container
 echo "Starting $container"
