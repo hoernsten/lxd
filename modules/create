@@ -60,7 +60,7 @@ elif [[ ! $priority =~ ^([1-9]|10)$ ]]; then
 fi
 
 # Revert to the default autostart option if autostart is not desired
-if [ $autostart == "yes" ]; then
+if [[ $autostart == "yes" ]]; then
     autostart=true
 else
     autostart=false
