@@ -39,11 +39,6 @@ if [ -z $iface ]; then
     iface=eth0
 fi
 
-# Add the rsyslog configuration if a server is specified
-if [ ! -z $syslog ]; then
-    printf "\n*.* @@$syslog:514" >> /etc/rsyslog.conf
-fi
-
 # Define iptables ruleset for systems not running ufw
 function iptables-rules {
 iptables --flush
@@ -96,21 +91,29 @@ elif grep -oq 'Ubuntu 16.04' /etc/os-release; then
 
 # Perform various network and system configurations if the guest operating system is Ubuntu 18.04
 elif grep -oq 'Ubuntu 18.04' /etc/os-release; then
-    echo "Updating package information"
-    apt-get -y update &> /dev/null
+    echo "Upgrading system"
+    apt update -y &> /dev/null
+    apt upgrade -y &> /dev/null
+    echo "Installing packages"
+    apt install -y ufw rsyslog unattended-upgrades nano &> /dev/null
     echo "Applying configurations"
     echo "APT::Periodic::Download-Upgradeable-Packages \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
     echo "APT::Periodic::AutocleanInterval \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
+    sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
     sed -i "s/$alias/$hostname/g" /etc/hostname
-    echo -e "127.0.0.1 localhost\n127.0.1.1 $hostname" > /etc/hosts
+    #echo -e "127.0.0.1 localhost\n127.0.1.1 $hostname" > /etc/hosts
     sed -i "s/dhcp4: true/dhcp4: false/g" /etc/netplan/50-cloud-init.yaml
     echo "            addresses: [$ipaddr/$prefix]" >> /etc/netplan/50-cloud-init.yaml
     echo "            gateway4: $gateway" >> /etc/netplan/50-cloud-init.yaml
     echo "            nameservers:" >> /etc/netplan/50-cloud-init.yaml
     echo "                addresses: [$dns1,$dns2]" >> /etc/netplan/50-cloud-init.yaml
     netplan apply
-    sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
     ufw enable &> /dev/null
+fi
+
+# Add the rsyslog configuration if a server is specified
+if [ ! -z $syslog ]; then
+    printf "\n*.* @@$syslog:514" >> /etc/rsyslog.conf
 fi
 
 # Reboot the system
