@@ -33,26 +33,24 @@ groups $USER | grep -o lxd
 Use the *ct* command followed by the module name to invoke it, then enter any values as needed when prompted. For example, to create a new container you would run *ct create*, enter a few values and then you're done.
 
 ```
-lxduser@ubuntu:~$ ct create
-Enter container name: c1
-Enter container image [default=ubuntu/18.04]: ubuntu/18.04
-Enter container disk quota (e.g. 500MB or 10GB) [default=5GB]: 10GB
-Enter container memory limit (e.g. 512MB or 4GB) [default=512MB]: 1024MB
-Enter container CPU core count limit (1-4) [default=1]: 2
-Enter container CPU priority (1-10) [default=5]: 8
-Enter container profile [default=default]: default
-Enter storage pool [default=default]: local
-Copying image
-Image copied successfully!
+user@ubuntu:~$ ct create
+Container name [default=random]: c1
+Container image [default=ubuntu:18.04]: ubuntu:18.04
+Container disk quota (e.g. 500MB or 10GB) [default=5GB]: 10GB
+Container memory limit (e.g. 512MB or 4GB) [default=512MB]: 1024MB
+Container CPU core count limit (1-4) [default=1]: 2
+Container CPU priority (1-10) [default=5]: 8
+Container profile [default=default]: default
+Autostart container at boot time (yes/no) [default=no]: yes
+Enter storage pool [default=default]: default
 Creating c1
-Creating snapshot
 Starting c1
-lxduser@ubuntu:~$
-lxduser@ubuntu:~$ lxc list
+user@ubuntu:~$
+user@ubuntu:~$ lxc list
 +-----------+---------+--------------------+------+------------+-----------+
 |   NAME    |  STATE  |        IPV4        | IPV6 |    TYPE    | SNAPSHOTS |
 +-----------+---------+--------------------+------+------------+-----------+
-| c1        | RUNNING | 192.168.0.2 (eth0) |      | PERSISTENT | 1         |
+| c1        | RUNNING | 192.168.0.5 (eth0) |      | PERSISTENT |           |
 +-----------+---------+--------------------+------+------------+-----------+
 ```
 ### Upcoming Features
