@@ -24,22 +24,26 @@ fi
 apt update -y
 
 if [[ $service == dns ]]; then
-    # Install the BIND package
-    apt install -y bind9
+    # Install the packages
+    apt install -y bind9 ufw
     # Allow inbound DNS traffic
     ufw allow 53/tcp
     ufw allow 53/udp
+    # Enable the firewall
+    ufw enable
     # Enable the BIND service
     systemctl enable bind9
 elif [[ $service == dhcp ]]; then
-    # Install the dhcpd package
-    apt install -y isc-dhcp-server
+    # Install the packages
+    apt install -y isc-dhcp-server ufw
     # Add the interface to the defaults file
     read -p "Assign network interface(s): " interface
     echo 'INTERFACESv4="$interface"' >> /etc/default/isc-dhcp-server
     # Allow inbound DHCP traffic
     ufw allow 67/tcp
     ufw allow 67/udp
+    # Enable the firewall
+    ufw enable
     # Enable the DHCP service
     systemctl enable isc-dhcp-server
 else
