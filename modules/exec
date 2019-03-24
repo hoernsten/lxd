@@ -7,6 +7,7 @@
 # Prompt for user input
 read -p "Enter container: " container
 read -e -p "Enter script to be executed: " script
+read -p "Reboot when finished (y/n) [default=no]: " reboot
 
 # Get the scripts directory
 dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )/scripts
@@ -41,3 +42,8 @@ lxc file push $script $container/root/$file 1>/dev/null
 lxc exec $container -- chmod +x $file
 lxc exec $container -- ./$file
 lxc exec $container -- rm $file
+
+# Restart the container if requested
+if [[ $reboot =~ yes|y ]]; then
+    lxc restart $container
+fi
