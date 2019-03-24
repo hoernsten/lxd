@@ -28,7 +28,6 @@ read -p "Enter primary DNS IP: " dns1
 read -p "Enter secondary DNS IP: " dns2
 read -p "Enter primary network interface [default=eth0]: " iface
 read -p "Enter remote syslog server [default=none]: " syslog
-read -p "Reboot when completed? (y/n) [default=no]: " reboot
 
 # Revert to default values if no input is provided
 if [ -z $hostname ]; then
@@ -114,10 +113,4 @@ fi
 # Add the rsyslog configuration if a server is specified
 if [ ! -z $syslog ]; then
     printf "\n*.* @@$syslog:514" >> /etc/rsyslog.conf
-fi
-
-# Reboot the system
-if [[ $reboot == "y" || $reboot == "yes" ]]; then
-    echo "Rebooting $hostname"
-    reboot
 fi
