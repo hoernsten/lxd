@@ -13,6 +13,7 @@ read -p "Container CPU core count limit (1-$(nproc)) [default=1]: " cpu
 read -p "Container CPU priority (1-10) [default=5]: " priority
 read -p "Container profile [default=default]: " profile
 read -p "Hard or soft memory limit (hard/soft) [default=soft]: " enforce
+read -p "Allow swap (yes/no) [default=yes]: " swap
 read -p "Autostart container at boot time (yes/no) [default=no]: " autostart
 read -p "Enter storage pool [default=default]: " pool
 
@@ -37,6 +38,13 @@ fi
 # Revert to a soft memory limit unless a hard limit is specified
 if [ $enforce != "hard" ]; then
     enforce=soft
+fi
+
+# Revert to the default value unless
+if [ $swap != "no" ]; then
+    swap=true
+else
+    swap=false
 fi
 
 # Revert to the default cpu count if no input is provided
@@ -122,6 +130,7 @@ fi
 if lxc list --columns="n" | grep -oq $container; then
     lxc config set $container limits.memory $memory
     lxc config set $container limits.memory.enforce $enforce
+    lxc config set $container limits.memory.swap $swap
     lxc config set $container limits.cpu $cpu
     lxc config set $container limits.cpu.priority $priority
     lxc config set $container boot.autostart $autostart
