@@ -46,12 +46,12 @@ elif [[ ! $memory =~ ^[0-9]{1,}(MB|GB)$ ]]; then
 fi
 
 # Revert to a soft memory limit unless a hard limit is specified
-if [ $enforce != "hard" ]; then
+if [[ $enforce != "hard" || ! $enforce ]]; then
     enforce=soft
 fi
 
 # Revert to the default value unless otherwise specified
-if [ $swap != "no" ]; then
+if [[ $swap != "no" || ! $swap ]]; then
     swap=true
 else
     swap=false
