@@ -40,7 +40,7 @@ if [ $enforce != "hard" ]; then
     enforce=soft
 fi
 
-# Revert to the default value unless
+# Revert to the default value unless otherwise specified
 if [ $swap != "no" ]; then
     swap=true
 else
