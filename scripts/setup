@@ -96,7 +96,7 @@ elif grep -oq 'Ubuntu 18.04' /etc/os-release; then
     apt update -y &> /dev/null
     apt upgrade -y &> /dev/null
     echo "Installing packages"
-    apt install -y ufw rsyslog iputils-ping unattended-upgrades nano &> /dev/null
+    apt install -y ufw rsyslog iputils-ping unattended-upgrades update-notifier-common nano &> /dev/null
     echo "Applying configurations"
     echo "APT::Periodic::Download-Upgradeable-Packages \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
     echo "APT::Periodic::AutocleanInterval \"1\";" >> /etc/apt/apt.conf.d/20auto-upgrades
