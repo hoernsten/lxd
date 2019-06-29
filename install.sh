@@ -73,7 +73,7 @@ fi
 # Upgrade the system and install packages
 apt-get -y update
 apt-get -y upgrade
-apt-get -y install openssh-server unattended-upgrades sysstat
+apt-get -y install snapd openssh-server unattended-upgrades sysstat
 apt-get -y remove --purge lxd lxd-client liblxc1 lxcfs
 apt-get -y autoremove
 
