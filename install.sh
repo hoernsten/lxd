@@ -146,7 +146,7 @@ fi
 
 # Download and extract
 wget -P /opt/lxd https://github.com/hoernsten/lxd/archive/master.tar.gz
-tar --strip-components=1 -xzvf /opt/lxd/master.tar.gz
+tar --strip-components=1 -xzvf /opt/lxd/master.tar.gz -C /opt/lxd
 
 # Modify permissions
 chgrp lxd /opt/lxd/ct
