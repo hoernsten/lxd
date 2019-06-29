@@ -53,6 +53,7 @@ echo "network:
 
 # Apply the network configuration
 netplan apply
+sleep 3
 
 # Verify connectivity before proceeding
 if dpkg-query -l | grep -oq iputils-ping; then
