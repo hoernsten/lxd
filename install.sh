@@ -10,8 +10,7 @@ pool_fs="btrfs"
 pool_mount="/mnt/local"
 profile_name="default"
 profile_description="Default profile"
-ip="192.168.0.2"
-subnet="24"
+ip="192.168.0.2/24"
 gateway="192.168.0.1"
 dns1="8.8.8.8"
 dns2="8.8.4.4"
@@ -46,7 +45,7 @@ echo "network:
     $if_bridge:
       interfaces: [$if_device]
       dhcp4: no
-      addresses: [$ip/$subnet]
+      addresses: [$ip]
       gateway4: $gateway
       nameservers:
         search: [$domain]
