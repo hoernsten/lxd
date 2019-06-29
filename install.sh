@@ -1,7 +1,6 @@
 #!/bin/bash
 
 # Settings
-admin_user="root"
 if_device="eth0"
 if_bridge="br0"
 pool_device="/dev/sda2"
@@ -79,9 +78,6 @@ apt-get -y autoremove
 
 # Install the LXD and Canonical Livepatch snaps
 snap install lxd canonical-livepatch
-
-# Add the admin user to the lxd group
-adduser $admin_user lxd
 
 # Initialize LXD with preseeded config
 cat <<EOF | lxd init --preseed
