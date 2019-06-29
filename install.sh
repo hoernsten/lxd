@@ -48,12 +48,11 @@ echo "network:
       dhcp4: $dhcp" > $(ls /etc/netplan/*.yaml | head -1)
 
 if [ $dhcp == "no" ]; then
-  echo "
-        addresses: [$ip]
-        gateway4: $gateway
-        nameservers:
-          search: [$domain]
-          addresses: [$dns1, $dns2]" >> $(ls /etc/netplan/*.yaml | head -1)
+  echo "      addresses: [$ip]
+      gateway4: $gateway
+      nameservers:
+        search: [$domain]
+        addresses: [$dns1, $dns2]" >> $(ls /etc/netplan/*.yaml | head -1)
 fi
 
 # Apply the network configuration
