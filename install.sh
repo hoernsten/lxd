@@ -15,9 +15,8 @@ ip="192.168.0.2/24"
 gateway="192.168.0.1"
 dns1="8.8.8.8"
 dns2="8.8.4.4"
-domain=""
+domain="example.com"
 wol="true"
-livepatch_token=""
 timezone="UTC"
 
 # Check if the script is running with root privileges
@@ -125,12 +124,6 @@ fi
 # Add the minimal Ubuntu images to the remote image list and download
 lxc remote add --protocol simplestreams ubuntu-minimal https://cloud-images.ubuntu.com/minimal/releases/
 lxc image copy ubuntu-minimal:18.04 local: --alias "ubuntu:18.04" --auto-update
-
-# Enable Canonical Livepatch
-if [ ! -z $livepatch_token ]; then
-  canonical-livepatch enable $livepatch_token
-  canonical-livepatch status --verbose
-fi
 
 # Enable automatic upgrades
 dpkg-reconfigure --priority=low unattended-upgrades
