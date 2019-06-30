@@ -25,14 +25,6 @@ if [ "$EUID" -ne 0 ]; then
   exit
 fi
 
-# Set the system timezone
-timedatectl set-timezone $timezone
-
-# Allow SSH and enable ufw
-sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
-ufw allow 22/tcp
-ufw enable
-
 # Create a bridge interface
 echo "network:
   version: 2
@@ -131,6 +123,14 @@ echo 'APT::Periodic::Update-Package-Lists "1";
 APT::Periodic::Download-Upgradeable-Packages "1";
 APT::Periodic::AutocleanInterval "7";
 APT::Periodic::Unattended-Upgrade "1";' > /etc/apt/apt.conf.d/20auto-upgrades
+
+# Allow SSH and enable ufw
+sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
+ufw allow 22/tcp
+ufw enable
+
+# Set the system timezone
+timedatectl set-timezone $timezone
 
 # Create the target directory
 if [[ ! -d /opt/lxd ]]; then
