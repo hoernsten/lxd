@@ -5,8 +5,6 @@ This repository contains various bash scripts created with the intention of maki
 In order to guarantee a flawless execution, there are certain criteria that should be met.
 
 * The host device is running Ubuntu 18.04 LTS
-* The lxd snap is installed and up to date
-* LXD has already been configured
 * The storage backend is either zfs or btrfs
 * Quotas are enabled for the storage backend of choice
 
