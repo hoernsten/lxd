@@ -13,12 +13,12 @@ In order to guarantee a flawless execution, there are certain criteria that shou
 This is not to say you will not be able to run the scripts using any other setup, but this is the environment in which they have been tested and confirmed to work without major issues.
 
 ### Installation
-Download the repository, extract it and run the install script.
+Download the and run the installation script.
 
 ```
-wget https://github.com/hoernsten/lxd/archive/master.tar.gz
-tar xzvf master.tar.gz
-sudo lxd-master/install
+wget https://raw.githubusercontent.com/hoernsten/lxd/master/install.sh
+chmod +x install.sh
+sudo ./install.sh
 ```
 It will then be installed to /opt/lxd, and a symbolic link will be created in /usr/local/bin.
 
