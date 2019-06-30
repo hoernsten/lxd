@@ -18,6 +18,7 @@ dns2="8.8.4.4"
 domain="example.com"
 wol="true"
 timezone="UTC"
+target="/opt/lxd"
 
 # Check if the script is running with root privileges
 if [ "$EUID" -ne 0 ]; then
@@ -135,19 +136,19 @@ APT::Periodic::Unattended-Upgrade "1";' > /etc/apt/apt.conf.d/20auto-upgrades
 timedatectl set-timezone $timezone
 
 # Create the target directory
-if [[ ! -d /opt/lxd ]]; then
-    mkdir -p /opt/lxd
+if [[ ! -d $target ]]; then
+    mkdir -p $target
 fi
 
 # Download and extract
-wget -P /opt/lxd https://github.com/hoernsten/lxd/archive/master.tar.gz
-tar --strip-components=1 -xzvf /opt/lxd/master.tar.gz -C /opt/lxd
+wget -P $target https://github.com/hoernsten/lxd/archive/master.tar.gz
+tar --strip-components=1 -xzvf $target/master.tar.gz -C $target
 
 # Modify permissions
-chgrp lxd /opt/lxd/ct
-chmod u=rwx,g=rx,o=r /opt/lxd/ct
+chgrp lxd $target/ct
+chmod u=rwx,g=rx,o=r $target/ct
 
 # Create a symlink
 if [ ! -f /usr/local/bin/ct ]; then
-    ln -s /opt/lxd/ct /usr/local/bin/
+    ln -s $target/ct /usr/local/bin/
 fi
