@@ -25,6 +25,22 @@ if [ "$EUID" -ne 0 ]; then
   exit
 fi
 
+# Verify connectivity before proceeding
+connectivity_check () {
+  if dpkg-query -l | grep -oq iputils-ping; then
+    while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
+      echo "Network: Unable to reach archive.ubuntu.com"
+      sleep 3
+    done
+  else
+    apt-get -y install iputils-ping
+    while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
+      echo "Network: Unable to reach archive.ubuntu.com"
+      sleep 3
+    done
+  fi
+}
+
 # Allow SSH and enable ufw
 sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
 ufw allow 22/tcp
@@ -54,20 +70,7 @@ fi
 # Apply the network configuration
 netplan apply
 sleep 3
-
-# Verify connectivity before proceeding
-if dpkg-query -l | grep -oq iputils-ping; then
-  while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
-    echo "Network: Unable to reach archive.ubuntu.com"
-    sleep 3
-  done
-else
-  apt-get -y install iputils-ping
-  while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
-    echo "Network: Unable to reach archive.ubuntu.com"
-    sleep 3
-  done
-fi
+connectivity_check
 
 # Upgrade the system and install packages
 apt-get -y update
@@ -123,7 +126,6 @@ lxc remote add --protocol simplestreams ubuntu-minimal https://cloud-images.ubun
 lxc image copy ubuntu-minimal:18.04 local: --alias "ubuntu:18.04" --auto-update
 
 # Enable automatic upgrades
-dpkg-reconfigure --priority=low unattended-upgrades
 echo 'APT::Periodic::Update-Package-Lists "1";
 APT::Periodic::Download-Upgradeable-Packages "1";
 APT::Periodic::AutocleanInterval "7";
