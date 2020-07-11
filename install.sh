@@ -82,6 +82,7 @@ apt-get -y autoremove
 
 # Install the LXD and Canonical Livepatch snaps
 snap install lxd canonical-livepatch
+snap refresh lxd
 
 # Initialize LXD with preseeded config
 cat <<EOF | lxd init --preseed
