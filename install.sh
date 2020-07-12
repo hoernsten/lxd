@@ -80,7 +80,13 @@ apt-get -y install snapd openssh-server unattended-upgrades sysstat
 apt-get -y remove --purge lxd lxd-client liblxc1 lxcfs
 apt-get -y autoremove
 
-# Install the LXD and Canonical Livepatch snaps
+# Install ZFS
+if [ $pool_fs == "zfs" ]; then
+  modprobe zfs
+  apt-get -y install zfsutils-linux
+fi
+
+# Install LXD and Canonical Livepatch
 snap install lxd canonical-livepatch
 snap refresh lxd
 
