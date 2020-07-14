@@ -26,6 +26,12 @@ if [ "$EUID" -ne 0 ]; then
   exit
 fi
 
+# Check if the parent interface exists
+while ! ip link show $if_device > /dev/null 2>&1; do
+  echo "Error: No $if_device interface was found"
+  read -p "Enter parent interface: " if_device
+done
+
 # Verify connectivity before proceeding
 connectivity_check () {
   if dpkg-query -l | grep -oq iputils-ping; then
