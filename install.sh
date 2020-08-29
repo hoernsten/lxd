@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if the script is running with root privileges
+if [ "$EUID" -ne 0 ]; then
+  echo "Error: Not running as root"
+  exit
+fi
+
 # Settings
 if_device="eth0"
 if_bridge="br0"
@@ -19,12 +25,7 @@ domain="example.com"
 wol="true"
 timezone="UTC"
 target="/opt/lxd"
-
-# Check if the script is running with root privileges
-if [ "$EUID" -ne 0 ]; then
-  echo "Error: Not running as root"
-  exit
-fi
+desktop="no"
 
 # Check if the parent interface exists
 while ! ip link show $if_device > /dev/null 2>&1; do
@@ -85,6 +86,11 @@ apt-get -y upgrade
 apt-get -y install snapd openssh-server unattended-upgrades sysstat
 apt-get -y remove --purge lxd lxd-client liblxc1 lxcfs
 apt-get -y autoremove
+
+# Install Ubuntu Desktop
+if [ $desktop == "yes" ]; then
+  apt-get -y install ubuntu-desktop-minimal
+fi
 
 # Install ZFS
 if [ $pool_fs == "zfs" ]; then
