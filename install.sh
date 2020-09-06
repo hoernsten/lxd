@@ -57,20 +57,21 @@ fi
 # Apply the network configuration
 echo "Applying network configuration"
 netplan apply
+sleep 3
 
 # Verify connectivity before proceeding
 if dpkg-query -l | grep -oq iputils-ping; then
   while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
-    sleep 3
     echo "Network: Unable to reach archive.ubuntu.com"
+    sleep 3
   done
 else
   echo "Installing iputils-ping"
   apt-get -y update &> /dev/null
   apt-get -y install iputils-ping &> /dev/null || echo "Error: Failed to install iputils-ping" && exit
   while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
-    sleep 3
     echo "Network: Unable to reach archive.ubuntu.com"
+    sleep 3
   done
 fi
 
