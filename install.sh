@@ -135,9 +135,9 @@ if [ ! -z $pool_mount ]; then
 fi
 
 # Enable btrfs quota
-if [ $pool_fs == "btrfs" ]; then
-  btrfs quota enable $pool_mount
-fi
+#if [ $pool_fs == "btrfs" ]; then
+#  btrfs quota enable $pool_mount
+#fi
 
 # Add the minimal Ubuntu images to the remote image list and download
 lxc remote add --protocol simplestreams ubuntu-minimal https://cloud-images.ubuntu.com/minimal/releases/
