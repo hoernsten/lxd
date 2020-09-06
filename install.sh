@@ -165,8 +165,8 @@ if [[ ! -d $target ]]; then
 fi
 
 # Download and extract
-wget -P $target https://github.com/hoernsten/lxd/archive/master.tar.gz 1> /dev/null
-tar --strip-components=1 -xzvf $target/master.tar.gz -C $target 1> /dev/null
+wget -P $target https://github.com/hoernsten/lxd/archive/master.tar.gz > /dev/null
+tar --strip-components=1 -xzvf $target/master.tar.gz -C $target > /dev/null
 
 # Modify permissions
 chgrp lxd $target/ct
