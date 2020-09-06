@@ -1,3 +1,5 @@
+#!/bin/bash
+
 archive-connect () {
   while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
     echo "Network: Unable to reach archive.ubuntu.com"
