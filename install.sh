@@ -55,6 +55,7 @@ if [ $dhcp == "no" ]; then
 fi
 
 # Apply the network configuration
+echo "Applying network configuration"
 netplan apply
 
 # Verify connectivity before proceeding
@@ -74,11 +75,12 @@ else
 fi
 
 # Upgrade the system and install packages
-apt-get -y update
-apt-get -y upgrade
-apt-get -y install ufw snapd openssh-server unattended-upgrades sysstat
-apt-get -y remove --purge lxd lxd-client liblxc1 lxcfs
-apt-get -y autoremove
+echo "Updating and installing packages"
+apt-get -y update 1> /dev/null
+apt-get -y upgrade 1> /dev/null
+apt-get -y install ufw snapd openssh-server unattended-upgrades sysstat 1> /dev/null
+apt-get -y remove --purge lxd lxd-client liblxc1 lxcfs 1> /dev/null
+apt-get -y autoremove 1> /dev/null
 
 # Allow SSH and enable ufw
 sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
@@ -87,11 +89,13 @@ ufw enable
 
 # Install Ubuntu Desktop
 if [ $desktop == "yes" ]; then
-  apt-get -y install ubuntu-desktop-minimal
+  echo "Installing Ubuntu Desktop"
+  apt-get -y install ubuntu-desktop-minimal 1> /dev/null
 fi
 
 # Install ZFS
 if [ $pool_fs == "zfs" ]; then
+  echo "Installing zfsutils-linux"
   modprobe zfs
   apt-get -y install zfsutils-linux
 fi
@@ -160,8 +164,8 @@ if [[ ! -d $target ]]; then
 fi
 
 # Download and extract
-wget -P $target https://github.com/hoernsten/lxd/archive/master.tar.gz
-tar --strip-components=1 -xzvf $target/master.tar.gz -C $target
+wget -P $target https://github.com/hoernsten/lxd/archive/master.tar.gz 1> /dev/null
+tar --strip-components=1 -xzvf $target/master.tar.gz -C $target 1> /dev/null
 
 # Modify permissions
 chgrp lxd $target/ct
