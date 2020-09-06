@@ -1,0 +1,15 @@
+archive-connect () {
+  while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
+    echo "Network: Unable to reach archive.ubuntu.com"
+    sleep 3
+  done
+}
+
+if dpkg-query -l | grep -oq iputils-ping; then
+  archive-connect
+else
+  echo "Installing iputils-ping"
+  apt-get -y update &> /dev/null
+  apt-get -y install iputils-ping &> /dev/null || echo "Error: Failed to install iputils-ping" && exit
+  archive-connect
+fi
