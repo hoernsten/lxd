@@ -4,7 +4,7 @@ This repository contains various bash scripts created with the intention of maki
 ### Prerequisites
 In order to guarantee a flawless execution, there are certain criteria that should be met.
 
-* The host device is running Ubuntu 18.04 LTS
+* The host server is running Ubuntu 18.04 or 20.04
 * The storage backend is either zfs or btrfs
 * Quotas are enabled for the storage backend of choice
 
