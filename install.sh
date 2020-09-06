@@ -33,27 +33,6 @@ while ! ip link show $if_device > /dev/null 2>&1; do
   read -p "Enter parent interface: " if_device
 done
 
-# Verify connectivity before proceeding
-connectivity_check () {
-  if dpkg-query -l | grep -oq iputils-ping; then
-    while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
-      echo "Network: Unable to reach archive.ubuntu.com"
-      sleep 3
-    done
-  else
-    apt-get -y install iputils-ping
-    while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
-      echo "Network: Unable to reach archive.ubuntu.com"
-      sleep 3
-    done
-  fi
-}
-
-# Allow SSH and enable ufw
-sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
-ufw allow 22/tcp
-ufw enable
-
 # Create a bridge interface
 echo "network:
   version: 2
@@ -77,15 +56,34 @@ fi
 
 # Apply the network configuration
 netplan apply
-sleep 3
-connectivity_check
+
+# Verify connectivity before proceeding
+if dpkg-query -l | grep -oq iputils-ping; then
+  while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
+    echo "Network: Unable to reach archive.ubuntu.com"
+    sleep 3
+  done
+else
+  echo "Installing iputils-ping"
+  apt-get -y update &> /dev/null
+  apt-get -y install iputils-ping &> /dev/null || echo "Error: Failed to install iputils-ping" && exit
+  while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
+    echo "Network: Unable to reach archive.ubuntu.com"
+    sleep 3
+  done
+fi
 
 # Upgrade the system and install packages
 apt-get -y update
 apt-get -y upgrade
-apt-get -y install snapd openssh-server unattended-upgrades sysstat
+apt-get -y install ufw snapd openssh-server unattended-upgrades sysstat
 apt-get -y remove --purge lxd lxd-client liblxc1 lxcfs
 apt-get -y autoremove
+
+# Allow SSH and enable ufw
+sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
+ufw allow 22/tcp
+ufw enable
 
 # Install Ubuntu Desktop
 if [ $desktop == "yes" ]; then
@@ -144,8 +142,9 @@ fi
 # Add the minimal Ubuntu images to the remote image list and download
 lxc remote add --protocol simplestreams ubuntu-minimal https://cloud-images.ubuntu.com/minimal/releases/
 lxc image copy ubuntu-minimal:18.04 local: --alias "ubuntu:18.04" --auto-update
+lxc image copy ubuntu-minimal:20.04 local: --alias "ubuntu:20.04" --auto-update
 
-# Enable automatic upgrades
+# Enable automatic security upgrades
 echo 'APT::Periodic::Update-Package-Lists "1";
 APT::Periodic::Download-Upgradeable-Packages "1";
 APT::Periodic::AutocleanInterval "7";
