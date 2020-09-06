@@ -6,12 +6,3 @@ archive-connect () {
     sleep 3
   done
 }
-
-if dpkg-query -l | grep -oq iputils-ping; then
-  archive-connect
-else
-  echo "Installing iputils-ping"
-  apt-get -y update &> /dev/null
-  apt-get -y install iputils-ping &> /dev/null || echo "Error: Failed to install iputils-ping" && exit
-  archive-connect
-fi
