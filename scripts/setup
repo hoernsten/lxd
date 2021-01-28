@@ -11,13 +11,8 @@ if [ -d /snap/lxd ]; then
 fi
 
 # Verify connectivity before proceeding
-if dpkg-query -l | grep -oq iputils-ping; then
-    while ! ping -c 1 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
-        echo "Error: Unable to reach archive.ubuntu.com"
-        sleep 3
-    done
-else
-    echo "Error: No network connection"
+if [[ ! $(curl -s --max-time 3 -I archive.ubuntu.com) ]]; then
+    echo "Error: Unable to reach archive.ubuntu.com"
     exit
 fi
 
