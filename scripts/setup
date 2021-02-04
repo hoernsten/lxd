@@ -107,6 +107,7 @@ elif grep -oqE 'Ubuntu (18\.04|20\.04)' /etc/os-release; then
     echo "            nameservers:" >> /etc/netplan/50-cloud-init.yaml
     echo "                addresses: [$dns1, $dns2]" >> /etc/netplan/50-cloud-init.yaml
     netplan apply
+    sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
     ufw enable &> /dev/null
 fi
 
