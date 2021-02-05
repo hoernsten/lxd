@@ -14,7 +14,7 @@ This is not to say you will not be able to run the scripts using any other setup
 Download the and run the installation script on the host server.
 
 ```
-wget https://raw.githubusercontent.com/hoernsten/lxd/master/install.sh
+wget https://raw.githubusercontent.com/hoernsten/lxd/master/install
 chmod +x install.sh
 sudo ./install.sh
 ```
