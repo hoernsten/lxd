@@ -144,7 +144,9 @@ if lxc list --columns="n" | grep -oq $container; then
     lxc config set $container limits.cpu $cpu
     lxc config set $container limits.cpu.priority $priority
     lxc config set $container boot.autostart $autostart
-    #lxc config device add $container root disk path=/ pool=$pool size=$quota 1>/dev/null
+    if [ ! -z $quota ]; then
+        lxc config device add $container root disk path=/ pool=$pool size=$quota 1>/dev/null
+    fi
 else
     echo "Error: Container creation failed"
     exit
