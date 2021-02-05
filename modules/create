@@ -6,8 +6,8 @@
 
 # Prompt for container configuration details
 read -p "Container name [default=random]: " container
-read -p "Container image [default=ubuntu:18.04]: " image
-read -p "Container disk quota (e.g. 500MB or 10GB) [default=5GB]: " quota
+read -p "Container image [default=ubuntu:20.04]: " image
+read -p "Container disk quota (e.g. 500MB or 10GB) [default=none]: " quota
 read -p "Container disk priority (1-10) [default=5]: " disk
 read -p "Container memory limit (e.g. 512MB or 4GB) [default=512MB]: " memory
 read -p "Container CPU core count limit (1-$(nproc)) [default=1]: " cpu
@@ -20,7 +20,7 @@ read -p "Enter storage pool [default=default]: " pool
 
 # Revert to the default quota if no input is provided
 if [ -z $quota ]; then
-    quota=5GB
+    echo "No quota selected"
 # Check if the value provided is a valid number that does not start with "0" and ends with either "MB" or "GB"
 elif [[ ! $quota =~ ^([1-9]{1}|[1-9][0-9]{1,})(MB|GB)$ ]]; then
     echo "Error: Invalid quota"
@@ -125,7 +125,7 @@ fi
 
 # Revert to default image if no input is provided
 if [ -z $image ]; then
-    image=ubuntu:18.04
+    image=ubuntu:20.04
 fi
 
 # Check if the image exists locally and create the container
