@@ -1,109 +1,75 @@
 #!/bin/bash
 
-# Check if the script is running with root privileges
-if [ "$EUID" -ne 0 ]; then
-  echo "Error: Not running as root"
-  exit
-fi
-
-# Settings
+timezone="UTC"
+ipv4="192.168.1.2/24"
+gw="192.168.1.1"
+dns1="1.1.1.1"
+dns2="1.0.0.1"
+domain="example.com"
+quota="false"
+livepatch="false"
 if_device="eth0"
 if_bridge="br0"
 pool_device="/dev/sda2"
-pool_name="local"
-pool_description="Local btrfs storage"
+pool_name="default"
+pool_description="Default btrfs storage"
 pool_fs="btrfs"
-pool_mount="/mnt/local"
+pool_mount="/mnt/lxd"
 profile_name="default"
 profile_description="Default profile"
-dhcp="no"
-ip="192.168.0.2/24"
-gateway="192.168.0.1"
-dns1="8.8.8.8"
-dns2="8.8.4.4"
-domain="example.com"
-wol="true"
-timezone="UTC"
-target="/opt/lxd"
-desktop="no"
 
-# Check if the parent interface exists
-while ! ip link show $if_device > /dev/null 2>&1; do
-  echo "Error: No $if_device interface was found"
-  read -p "Enter parent interface: " if_device
-done
-
-# Create a bridge interface
-echo "network:
-  version: 2
-  renderer: networkd
-  ethernets:
-    $if_device:
-      dhcp4: no
-      wakeonlan: $wol
-  bridges:
-    $if_bridge:
-      interfaces: [$if_device]
-      dhcp4: $dhcp" > $(ls /etc/netplan/*.yaml | head -1)
-
-if [ $dhcp == "no" ]; then
-  echo "      addresses: [$ip]
-      gateway4: $gateway
-      nameservers:
-        search: [$domain]
-        addresses: [$dns1, $dns2]" >> $(ls /etc/netplan/*.yaml | head -1)
+# Check if the script is running with root privileges
+if [ "$EUID" -ne 0 ]; then
+    echo "Error: Not running as root"
+    exit
 fi
 
-# Apply the network configuration
-echo "Applying network configuration"
-netplan apply
-sleep 3
+# Set the system timezone
+timedatectl set-timezone $timezone
 
-# Verify connectivity before proceeding
-if dpkg-query -l | grep -oq iputils-ping; then
-  while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
-    echo "Network: Unable to reach archive.ubuntu.com"
-    sleep 3
-  done
-else
-  echo "Installing iputils-ping"
-  apt-get -y update &> /dev/null
-  apt-get -y install iputils-ping &> /dev/null || echo "Error: Failed to install iputils-ping" && exit
-  while ! ping -c 3 -W 1 archive.ubuntu.com > /dev/null 2>&1; do
-    echo "Network: Unable to reach archive.ubuntu.com"
-    sleep 3
-  done
-fi
+# Upgrade the system and install necessary packages
+apt-get -y update
+apt-get -y upgrade
+apt-get -y install ufw openssh-server unattended-upgrades sysstat iputils-ping
+apt-get -y remove --purge lxd lxd-client liblxc1 lxcfs
+apt-get -y autoremove
 
-# Upgrade the system and install packages
-echo "Updating and installing packages"
-apt-get -y update 1> /dev/null
-apt-get -y upgrade 1> /dev/null
-apt-get -y install ufw snapd openssh-server unattended-upgrades sysstat 1> /dev/null
-apt-get -y remove --purge lxd lxd-client liblxc1 lxcfs 1> /dev/null
-apt-get -y autoremove 1> /dev/null
+# Install the LXD and Canonical Livepatch snaps
+snap install lxd canonical-livepatch
 
 # Allow SSH and enable ufw
 sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
 ufw allow 22/tcp
 ufw enable
 
-# Install Ubuntu Desktop
-if [ $desktop == "yes" ]; then
-  echo "Installing Ubuntu Desktop"
-  apt-get -y install ubuntu-desktop-minimal 1> /dev/null
-fi
+# Create a bridge interface
+cat > /etc/netplan/*.yaml << EOL
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    $if_device:
+      dhcp4: no
+      wakeonlan: true
+  bridges:
+    $if_bridge:
+      interfaces: [$if_device]
+      dhcp4: no
+      addresses: [$ipv4]
+      gateway4: $gw
+      nameservers:
+        search: [$domain]
+        addresses: [$dns1,$dns2]
+EOL
 
-# Install ZFS
-if [ $pool_fs == "zfs" ]; then
-  echo "Installing zfsutils-linux"
-  modprobe zfs
-  apt-get -y install zfsutils-linux
-fi
+# Apply the network configuration
+netplan apply
 
-# Install LXD and Canonical Livepatch
-snap install lxd canonical-livepatch
-snap refresh lxd
+# Wait until connectivity has been re-established
+while [[ ! $(curl -s --max-time 3 -I archive.ubuntu.com) ]]; do
+    echo "Warning: Unable to reach archive.ubuntu.com"
+    sleep 3
+done
 
 # Initialize LXD with preseeded config
 cat <<EOF | lxd init --preseed
@@ -112,12 +78,12 @@ networks: []
 storage_pools:
 - config:
     source: $pool_device
-  description: "$pool_description"
+  description: $pool_description
   name: $pool_name
   driver: $pool_fs
 profiles:
 - config: {}
-  description: "$profile_description"
+  description: $profile_description
   devices:
     eth0:
       name: eth0
@@ -128,51 +94,50 @@ profiles:
       path: /
       pool: $pool_name
       type: disk
-  name: $profile_name
+  name: default
 cluster: null
 EOF
 
 # Create a mount point and mount the LXD pool partition
 if [ ! -z $pool_mount ]; then
-  mkdir -p $pool_mount
-  mount $pool_device $pool_mount
-  echo "UUID=$(blkid -o value -s UUID $pool_device)	$pool_mount	$pool_fs	defaults		0	2" >> /etc/fstab
+    mkdir -p $pool_mount
+    if [ -d $pool_mount ]; then
+        mount $pool_device $pool_mount
+        echo "UUID=$(blkid -o value -s UUID $pool_device)	$pool_mount	$pool_fs	defaults		0	2" >> /etc/fstab
+        if [ $quota == "true" ] && [ $pool_fs == "btrfs" ]; then
+            btrfs quota enable $pool_mount
+        fi
+    else
+        echo "Error: Unable to mount pool device"
+    fi
 fi
 
-# Enable btrfs quota
-#if [ $pool_fs == "btrfs" ]; then
-#  btrfs quota enable $pool_mount
-#fi
-
-# Add the minimal Ubuntu images to the remote image list and download
+# Add the minimal Ubuntu image to the remote image list and download
 lxc remote add --protocol simplestreams ubuntu-minimal https://cloud-images.ubuntu.com/minimal/releases/
-lxc image copy ubuntu-minimal:18.04 local: --alias "ubuntu:18.04" --auto-update
 lxc image copy ubuntu-minimal:20.04 local: --alias "ubuntu:20.04" --auto-update
 
-# Enable automatic security upgrades
-echo 'APT::Periodic::Update-Package-Lists "1";
+# Enable Canonical Livepatch
+if [ $livepatch == "true" ]; then
+    read -p "Enter Livepatch token: " token
+	if [ ! -z $token ]; then
+        canonical-livepatch enable $token
+        canonical-livepatch status --verbose
+    fi
+fi
+
+# Enable automatic upgrades
+dpkg-reconfigure --priority=low unattended-upgrades
+cat > /etc/apt/apt.conf.d/20auto-upgrades << EOF
+APT::Periodic::Update-Package-Lists "1";
 APT::Periodic::Download-Upgradeable-Packages "1";
 APT::Periodic::AutocleanInterval "7";
-APT::Periodic::Unattended-Upgrade "1";' > /etc/apt/apt.conf.d/20auto-upgrades
-systemctl restart unattended-upgrades
+APT::Periodic::Unattended-Upgrade "1";
+EOF
 
-# Set the system timezone
-timedatectl set-timezone $timezone
-
-# Create the target directory
-if [[ ! -d $target ]]; then
-    mkdir -p $target
-fi
-
-# Download and extract
-wget -P $target https://github.com/hoernsten/lxd/archive/master.tar.gz > /dev/null
-tar --strip-components=1 -xzvf $target/master.tar.gz -C $target > /dev/null
-
-# Modify permissions
-chgrp lxd $target/ct
-chmod u=rwx,g=rx,o=r $target/ct
-
-# Create a symlink
-if [ ! -f /usr/local/bin/ct ]; then
-    ln -s $target/ct /usr/local/bin/
-fi
+# Download and install the LXD scripts
+mkdir -p /opt/lxd
+wget -P /opt/lxd https://github.com/hoernsten/lxd/archive/master.tar.gz
+tar --strip-components=1 -xzvf /opt/lxd/master.tar.gz -C /opt/lxd/
+chgrp lxd /opt/lxd/ct
+chmod u=rwx,g=rx,o=r /opt/lxd/ct
+ln -s /opt/lxd/ct /usr/local/bin/
