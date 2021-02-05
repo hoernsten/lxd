@@ -9,7 +9,7 @@ modules=$(dirname $(readlink -f $0))/modules
 
 # Check if the current user is a member of the lxd group
 if ! groups $(whoami) | grep -oq lxd; then
-    echo "Error: User is not a member of lxd"
+    echo "Error: User is not a member of the lxd group"
 # Check if a module was specified
 elif [ -z $1 ]; then
     echo "Error: No module was specified"
@@ -25,5 +25,3 @@ elif [ -f $modules/$1 ]; then
 else
     echo "Error: Module not found"
 fi
-
-exit
