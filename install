@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# Check if the script is running with root privileges
+if [ "$EUID" -ne 0 ]; then
+    echo "Error: Not running as root"
+    exit
+fi
+
 # Import or define variables
 if [ -f ./vars ]; then
     source ./vars
@@ -21,12 +27,6 @@ else
     pool_mount="/mnt/lxd"
     profile_name="default"
     profile_description="Default profile"
-fi
-
-# Check if the script is running with root privileges
-if [ "$EUID" -ne 0 ]; then
-    echo "Error: Not running as root"
-    exit
 fi
 
 # Set the system timezone
