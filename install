@@ -30,6 +30,8 @@ profile_name="default"
 profile_description="Default profile"
 EOL
     echo "Info: Example vars file created in $(realpath ./vars)"
+    nano ./vars
+    ./install
     exit
 fi
 
