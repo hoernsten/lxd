@@ -6,7 +6,7 @@ if [ "$EUID" -ne 0 ]; then
     exit
 fi
 
-# Import or define variables
+# Import or create vars file
 if [ -f ./vars ]; then
     source ./vars
 else
