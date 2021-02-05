@@ -15,8 +15,8 @@ Download the and run the installation script on the host server.
 
 ```
 wget https://raw.githubusercontent.com/hoernsten/lxd/master/install
-chmod +x install.sh
-sudo ./install.sh
+chmod +x install
+sudo ./install
 ```
 It will then be installed to /opt/lxd, and a symbolic link will be created in /usr/local/bin.
 
