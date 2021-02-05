@@ -1,22 +1,27 @@
 #!/bin/bash
 
-timezone="UTC"
-ipv4="192.168.1.2/24"
-gw="192.168.1.1"
-dns1="1.1.1.1"
-dns2="1.0.0.1"
-domain="example.com"
-quota="false"
-livepatch="false"
-if_device="eth0"
-if_bridge="br0"
-pool_device="/dev/sda2"
-pool_name="default"
-pool_description="Default btrfs storage"
-pool_fs="btrfs"
-pool_mount="/mnt/lxd"
-profile_name="default"
-profile_description="Default profile"
+# Import or define variables
+if [ -f ./vars ]; then
+    source ./vars
+else
+    timezone="UTC"
+    ipv4="192.168.1.2/24"
+    gw="192.168.1.1"
+    dns1="1.1.1.1"
+    dns2="1.0.0.1"
+    domain="example.com"
+    quota="false"
+    livepatch="false"
+    if_device="eth0"
+    if_bridge="br0"
+    pool_device="/dev/sda2"
+    pool_name="default"
+    pool_description="Default btrfs storage"
+    pool_fs="btrfs"
+    pool_mount="/mnt/lxd"
+    profile_name="default"
+    profile_description="Default profile"
+fi
 
 # Check if the script is running with root privileges
 if [ "$EUID" -ne 0 ]; then
