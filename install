@@ -29,7 +29,7 @@ pool_mount="/mnt/lxd"
 profile_name="default"
 profile_description="Default profile"
 EOL
-    echo "Info: Example vars file created in $(realpath ./vars)"
+    echo "Info: vars file created in $(realpath ./vars)"
     nano ./vars
     ./install
     exit
