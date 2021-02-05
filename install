@@ -34,8 +34,8 @@ apt-get -y install ufw openssh-server unattended-upgrades sysstat iputils-ping
 apt-get -y remove --purge lxd lxd-client liblxc1 lxcfs
 apt-get -y autoremove
 
-# Install the LXD and Canonical Livepatch snaps
-snap install lxd canonical-livepatch
+# Install the LXD snap
+snap install lxd
 
 # Allow SSH and enable ufw
 sed -i 's/IPV6=yes/IPV6=no/g' /etc/default/ufw
@@ -118,8 +118,9 @@ lxc image copy ubuntu-minimal:20.04 local: --alias "ubuntu:20.04" --auto-update
 
 # Enable Canonical Livepatch
 if [ $livepatch == "true" ]; then
+    snap install canonical-livepatch
     read -p "Enter Livepatch token: " token
-	if [ ! -z $token ]; then
+    if [ ! -z $token ]; then
         canonical-livepatch enable $token
         canonical-livepatch status --verbose
     fi
