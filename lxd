@@ -6,7 +6,9 @@ scripts=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts
 # Create a new container
 function create {
   echo "Creating container"
+  # Download the latest script version
   wget -q https://raw.githubusercontent.com/hoernsten/lxd/master/modules/create -O $scripts/create
+  # Run the script
   chmod +x $scripts/create
   $scripts/create
 }
@@ -15,7 +17,14 @@ function create {
 function setup {
   echo "Running setup"
   read -p "Enter container name: " target
+  # Check if the container exists
+  if ! lxc list --columns="n" | grep -oq $target; then
+    echo "Error: Container $target does not exist"
+    exit
+  fi
+  # Download the latest script version
   wget -q https://raw.githubusercontent.com/hoernsten/lxd/master/scripts/setup -O $scripts/setup
+  # Push and run the script on the target container
   lxc file push $scripts/setup $target/root/setup
   lxc exec $target -- chmod +x setup
   lxc exec $target -- ./setup
