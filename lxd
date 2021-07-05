@@ -3,6 +3,10 @@
 # Define the script directory
 scripts=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts
 
+if [ ! -d $scripts ]; then
+  mkdir $scripts
+fi
+
 # Create a new container
 function create {
   echo "Creating container"
