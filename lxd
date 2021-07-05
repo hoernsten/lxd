@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Define the script directory as ./scripts
+# Define the script directory
 scripts=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts
 
 # Create a new container
