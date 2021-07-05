@@ -3,6 +3,7 @@
 # Define the script directory
 scripts=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts
 
+# Create the script directory if it does not exist
 if [ ! -d $scripts ]; then
   mkdir $scripts
 fi
