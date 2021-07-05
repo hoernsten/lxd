@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Define the script directory as ./scripts
+scripts=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts
+
+# Create a new container
+function create {
+  echo "Creating container"
+  wget -q https://raw.githubusercontent.com/hoernsten/lxd/master/modules/create -O $scripts/create
+  chmod +x $scripts/create
+  $scripts/create
+}
+
+# Configure a container
+function setup {
+  echo "Running setup"
+  read -p "Enter container name: " target
+  wget -q https://raw.githubusercontent.com/hoernsten/lxd/master/scripts/setup -O $scripts/setup
+  lxc file push $scripts/setup $target/root/setup
+  lxc exec $target -- chmod +x setup
+  lxc exec $target -- ./setup
+  lxc exec $target -- rm setup
+}
+
+# Process flags and execute functions
+for arg in "$@"
+do
+  case $arg in
+    -c|--create)
+    create
+    shift
+    ;;
+    -s|--setup)
+    setup
+    shift
+    ;;
+  esac
+done
