@@ -3,24 +3,17 @@
 # Check if the current user is a member of the lxd group
 if ! groups $(whoami) | grep -oq lxd; then
   echo "Error: User $(whoami) is not a member of the lxd group"
-fi
-
-# Define the script directory
-scripts=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts
-
-# Create the script directory if it does not exist
-if [ ! -d $scripts ]; then
-  mkdir $scripts
+  exit
 fi
 
 # Create a new container
 function create {
   echo "Creating container"
   # Download the latest script version
-  wget -q https://raw.githubusercontent.com/hoernsten/lxd/master/modules/create -O $scripts/create
+  curl -s https://raw.githubusercontent.com/hoernsten/lxd/master/modules/create --create-dirs -o /tmp/lxd/create
   # Run the script
-  chmod +x $scripts/create
-  $scripts/create
+  chmod +x /tmp/lxd/create
+  /tmp/lxd/create
 }
 
 # Configure a container
@@ -33,9 +26,9 @@ function setup {
     exit
   fi
   # Download the latest script version
-  wget -q https://raw.githubusercontent.com/hoernsten/lxd/master/scripts/setup -O $scripts/setup
+  curl -s https://raw.githubusercontent.com/hoernsten/lxd/master/scripts/setup --create-dirs -o /tmp/lxd/setup
   # Push and run the script on the target container
-  lxc file push $scripts/setup $target/root/setup
+  lxc file push /tmp/lxd/setup $target/root/setup
   lxc exec $target -- chmod +x setup
   lxc exec $target -- ./setup
   lxc exec $target -- rm setup
