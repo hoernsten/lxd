@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Check if the current user is a member of the lxd group
+if ! groups $(whoami) | grep -oq lxd; then
+  echo "Error: User $(whoami) is not a member of the lxd group"
+fi
+
 # Define the script directory
 scripts=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/scripts
 
