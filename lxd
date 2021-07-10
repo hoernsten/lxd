@@ -22,7 +22,6 @@ function create {
   curl -s https://raw.githubusercontent.com/hoernsten/lxd/master/modules/create --create-dirs -o /tmp/lxd/create
   # Run the script
   chmod +x /tmp/lxd/create
-  sed -i "s|conf=\"\"|conf=$conf|g" /tmp/lxd/create
   /tmp/lxd/create
 }
 
