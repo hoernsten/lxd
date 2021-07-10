@@ -18,6 +18,9 @@ read -p "Allow swap (yes/no) [default=yes]: " swap
 read -p "Autostart container at boot time (yes/no) [default=no]: " autostart
 read -p "Enter storage pool [default=default]: " pool
 
+# Path to config file
+conf=""
+
 # Revert to the default quota if no input is provided
 if [ -z $quota ]; then
     echo "No quota selected"
