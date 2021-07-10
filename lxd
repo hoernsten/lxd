@@ -6,6 +6,12 @@ if ! groups $(whoami) | grep -oq lxd; then
   exit
 fi
 
+if [ ! -f ./lxd.conf ]; then
+  echo "Creating conf file"
+  curl -s https://raw.githubusercontent.com/hoernsten/lxd/master/lxd.conf -o ./lxd.conf
+  nano lxd.conf
+fi
+
 # Create a new container
 function create {
   echo "Creating container"
