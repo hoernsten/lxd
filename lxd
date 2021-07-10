@@ -10,8 +10,10 @@ if [ ! -f ./lxd.conf ]; then
   echo "Creating conf file"
   curl -s https://raw.githubusercontent.com/hoernsten/lxd/master/lxd.conf -o ./lxd.conf
   nano lxd.conf
-  conf="$(pwd ./lxd.conf)/lxd.conf"
 fi
+
+# Define path to config file
+conf="$(pwd ./lxd.conf)/lxd.conf"
 
 # Create a new container
 function create {
@@ -20,6 +22,7 @@ function create {
   curl -s https://raw.githubusercontent.com/hoernsten/lxd/master/modules/create --create-dirs -o /tmp/lxd/create
   # Run the script
   chmod +x /tmp/lxd/create
+  sed -i "s|conf=|conf=$conf|g" /tmp/lxd/create
   /tmp/lxd/create
 }
 
