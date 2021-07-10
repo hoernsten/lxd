@@ -10,6 +10,7 @@ if [ ! -f ./lxd.conf ]; then
   echo "Creating conf file"
   curl -s https://raw.githubusercontent.com/hoernsten/lxd/master/lxd.conf -o ./lxd.conf
   nano lxd.conf
+  conf="$(pwd ./lxd.conf)/lxd.conf"
 fi
 
 # Create a new container
