@@ -4,10 +4,6 @@
 ##### Create a new container #####
 ##################################
 
-# Path to config file
-conf=""
-source $conf
-
 # Prompt for container configuration details
 read -p "Container name [default=random]: " container
 read -p "Container image [default=ubuntu:20.04]: " image
