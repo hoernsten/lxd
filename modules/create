@@ -4,6 +4,10 @@
 ##### Create a new container #####
 ##################################
 
+# Path to config file
+conf=""
+source $conf
+
 # Prompt for container configuration details
 read -p "Container name [default=random]: " container
 read -p "Container image [default=ubuntu:20.04]: " image
@@ -17,9 +21,6 @@ read -p "Hard or soft memory limit (hard/soft) [default=soft]: " enforce
 read -p "Allow swap (yes/no) [default=yes]: " swap
 read -p "Autostart container at boot time (yes/no) [default=no]: " autostart
 read -p "Enter storage pool [default=default]: " pool
-
-# Path to config file
-conf=""
 
 # Revert to the default quota if no input is provided
 if [ -z $quota ]; then
